@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file alias="Main.qml">qml/Main.qml</file>
+        <file alias="SampleData.js">qml/SampleData.js</file>
+        <file alias="components/BrowsePane.qml">qml/components/BrowsePane.qml</file>
+        <file alias="components/BottomPanel.qml">qml/components/BottomPanel.qml</file>
+        <file alias="components/ServiceTreePane.qml">qml/components/ServiceTreePane.qml</file>
+        <file alias="components/Toast.qml">qml/components/Toast.qml</file>
+        <file alias="components/WorkbenchPane.qml">qml/components/WorkbenchPane.qml</file>
+    </qresource>
+</RCC>
