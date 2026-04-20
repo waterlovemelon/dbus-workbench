@@ -106,3 +106,50 @@ test('explorePaths keeps current path when introspection fails for reasons other
   assert.equal(consoleErrors.length, 1)
   assert.match(String(consoleErrors[0]?.[0]), /Failed to introspect path \/slow/)
 })
+
+test('introspectPath preserves signal argument metadata as output-style args', async () => {
+  const explorer = new ServiceExplorer() as any
+
+  explorer.getIntrospectionXML = async () => `
+    <node>
+      <interface name="com.example.Interface">
+        <signal name="PropertiesChanged">
+          <arg name="interface_name" type="s"/>
+          <arg name="changed_properties" type="a{sv}"/>
+          <arg name="invalidated_properties" type="as"/>
+        </signal>
+      </interface>
+    </node>
+  `
+
+  const interfaces = await explorer.introspectPath({}, 'com.example.Service', '/com/example/Object')
+  const signal = interfaces[0]?.signalMembers[0]
+
+  assert.deepEqual(signal?.inputArgs, [])
+  assert.deepEqual(signal?.outputArgs, [
+    { name: 'interface_name', type: 's', direction: 'out' },
+    { name: 'changed_properties', type: 'a{sv}', direction: 'out' },
+    { name: 'invalidated_properties', type: 'as', direction: 'out' },
+  ])
+})
+
+test('introspectPath keeps empty names for unnamed args', async () => {
+  const explorer = new ServiceExplorer() as any
+
+  explorer.getIntrospectionXML = async () => `
+    <node>
+      <interface name="com.example.Interface">
+        <method name="Ping">
+          <arg direction="in" type="s"/>
+        </method>
+      </interface>
+    </node>
+  `
+
+  const interfaces = await explorer.introspectPath({}, 'com.example.Service', '/com/example/Object')
+  const method = interfaces[0]?.methods[0]
+
+  assert.deepEqual(method?.inputArgs, [
+    { name: '', type: 's', direction: 'in' },
+  ])
+})

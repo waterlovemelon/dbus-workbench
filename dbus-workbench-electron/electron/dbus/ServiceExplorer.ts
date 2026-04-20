@@ -1,5 +1,5 @@
 import { Message, MessageType, sessionBus, systemBus } from 'dbus-next'
-import type { BusType, DbusMemberInfo, DbusInterfaceInfo } from './types'
+import type { BusType, DbusMemberInfo, DbusInterfaceInfo, DbusArgumentInfo } from './types'
 
 /**
  * ServiceExplorer - Discover and introspect D-Bus services
@@ -164,6 +164,10 @@ export class ServiceExplorer {
             if (!methodNameMatch) continue
 
             const methodName = methodNameMatch[1]
+            const args = this.extractArguments(methodMatch, 'in')
+            const inputArgs = args.filter((arg) => arg.direction === 'in')
+            const outputArgs = args.filter((arg) => arg.direction === 'out')
+
             const method: DbusMemberInfo = {
               id: `${path}:${interfaceName}:${methodName}`,
               name: methodName,
@@ -171,9 +175,11 @@ export class ServiceExplorer {
               serviceName,
               interfaceName,
               path,
-              signature: this.extractMethodSignature(methodMatch),
-              returnType: this.extractMethodReturnType(methodMatch),
+              signature: inputArgs.map((arg) => arg.type).join(''),
+              returnType: outputArgs.map((arg) => arg.type).join(''),
               annotation: '',
+              inputArgs,
+              outputArgs,
             }
 
             iface.methods.push(method)
@@ -188,6 +194,8 @@ export class ServiceExplorer {
             if (!signalNameMatch) continue
 
             const signalName = signalNameMatch[1]
+            const outputArgs = this.extractArguments(signalMatch, 'out')
+
             const signal: DbusMemberInfo = {
               id: `${path}:${interfaceName}:${signalName}`,
               name: signalName,
@@ -195,9 +203,11 @@ export class ServiceExplorer {
               serviceName,
               interfaceName,
               path,
-              signature: this.extractSignalSignature(signalMatch),
+              signature: outputArgs.map((arg) => arg.type).join(''),
               returnType: '',
               annotation: '',
+              inputArgs: [],
+              outputArgs,
             }
 
             iface.signalMembers.push(signal)
@@ -226,6 +236,8 @@ export class ServiceExplorer {
               signature: propertyType,
               returnType: propertyType,
               annotation: accessMatch ? accessMatch[1] : '',
+              inputArgs: [],
+              outputArgs: [],
             }
 
             iface.properties.push(property)
@@ -303,6 +315,28 @@ export class ServiceExplorer {
       const typeMatch = match.match(/type="([^"]+)"/)
       return typeMatch ? typeMatch[1] : ''
     }).join('')
+  }
+
+  /**
+   * Extract all argument nodes from XML as structured DbusArgumentInfo objects
+   */
+  private extractArguments(xml: string, defaultDirection: 'in' | 'out'): DbusArgumentInfo[] {
+    const argMatches = xml.match(/<arg\b[^>]*\/?>/g)
+    if (!argMatches) return []
+
+    return argMatches.map((argXml) => ({
+      name: this.extractAttribute(argXml, 'name'),
+      type: this.extractAttribute(argXml, 'type'),
+      direction: (this.extractAttribute(argXml, 'direction') || defaultDirection) as 'in' | 'out',
+    }))
+  }
+
+  /**
+   * Extract a single attribute value from an XML string
+   */
+  private extractAttribute(xml: string, name: string): string {
+    const match = xml.match(new RegExp(`${name}="([^"]*)"`))
+    return match?.[1] ?? ''
   }
 
   /**
