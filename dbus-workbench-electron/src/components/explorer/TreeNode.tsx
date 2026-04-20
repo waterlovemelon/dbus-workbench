@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { ChevronRight, ChevronDown, File, Folder, Zap, Activity, Settings } from 'lucide-react'
 import type { TreeNode as TreeNodeType } from '../../lib/buildTree'
+import { formatMemberLabel } from '../../lib/memberLabel'
 
 interface TreeNodeProps {
   node: TreeNodeType
@@ -71,7 +72,9 @@ export function TreeNode({ node, selectedId, onSelect, level }: TreeNodeProps) {
           <span className="w-3" />
         )}
         {getIcon()}
-        <span className="truncate text-xs">{node.label}</span>
+        <span className="truncate text-xs">
+          {node.type === 'member' && node.member ? formatMemberLabel(node.member) : node.label}
+        </span>
       </div>
       {expanded && hasChildren && (
         <div>

@@ -97,31 +97,33 @@ export class ServiceExplorer {
     serviceName: string,
     path: string
   ): Promise<string[]> {
-    const paths: string[] = [path]
-
     try {
-      // Introspect current path to find child nodes
+      const paths: string[] = [path]
       const xml = await this.getIntrospectionXML(bus, serviceName, path)
-      // Simple XML parsing - find all <node name="..."/> elements
       const nodeMatches = xml.match(/<node\s+name="([^"]+)"/g)
+
       if (nodeMatches) {
         for (const match of nodeMatches) {
           const nameMatch = match.match(/name="([^"]+)"/)
           if (nameMatch && nameMatch[1]) {
             const nodeName = nameMatch[1]
             const childPath = path === '/' ? `/${nodeName}` : `${path}/${nodeName}`
-            // Recursively explore child paths
             const childPaths = await this.explorePaths(bus, serviceName, childPath)
             paths.push(...childPaths)
           }
         }
       }
-    } catch (error) {
-      // If introspection fails, just return the current path
-      console.error(`Failed to introspect path ${path}:`, error)
-    }
 
-    return paths
+      return paths
+    } catch (error) {
+      const isUnknownObject = (error as { type?: string }).type === 'org.freedesktop.DBus.Error.UnknownObject'
+      if (isUnknownObject && path !== '/') {
+        return []
+      }
+
+      console.error(`Failed to introspect path ${path}:`, error)
+      return [path]
+    }
   }
 
   /**
