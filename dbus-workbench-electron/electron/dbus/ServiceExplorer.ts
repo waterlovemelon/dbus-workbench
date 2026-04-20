@@ -279,45 +279,6 @@ export class ServiceExplorer {
   }
 
   /**
-   * Extract method signature from XML string
-   */
-  private extractMethodSignature(methodXml: string): string {
-    const argMatches = methodXml.match(/<arg[^>]*direction="in"[^>]*type="([^"]+)"/g)
-    if (!argMatches) return ''
-
-    return argMatches.map(match => {
-      const typeMatch = match.match(/type="([^"]+)"/)
-      return typeMatch ? typeMatch[1] : ''
-    }).join('')
-  }
-
-  /**
-   * Extract method return type from XML string
-   */
-  private extractMethodReturnType(methodXml: string): string {
-    const argMatches = methodXml.match(/<arg[^>]*direction="out"[^>]*type="([^"]+)"/g)
-    if (!argMatches) return ''
-
-    return argMatches.map(match => {
-      const typeMatch = match.match(/type="([^"]+)"/)
-      return typeMatch ? typeMatch[1] : ''
-    }).join('')
-  }
-
-  /**
-   * Extract signal signature from XML string
-   */
-  private extractSignalSignature(signalXml: string): string {
-    const argMatches = signalXml.match(/<arg[^>]*type="([^"]+)"/g)
-    if (!argMatches) return ''
-
-    return argMatches.map(match => {
-      const typeMatch = match.match(/type="([^"]+)"/)
-      return typeMatch ? typeMatch[1] : ''
-    }).join('')
-  }
-
-  /**
    * Extract all argument nodes from XML as structured DbusArgumentInfo objects
    */
   private extractArguments(xml: string, defaultDirection: 'in' | 'out'): DbusArgumentInfo[] {
