@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { DbusMemberInfo } from '../../types/electron-api'
-import { countDbusArguments } from '../../lib/dbusSignature'
+import type { DbusArgumentInfo, DbusMemberInfo } from '../../types/electron-api'
+import { formatDbusTypeLabel } from '../../lib/memberLabel'
 import { ArgumentForm } from './ArgumentForm'
 import { ResultView } from './ResultView'
 import { useMethodInvoker } from '../../hooks/useMethodInvoker'
@@ -12,18 +12,26 @@ interface MethodPaneProps {
   onBack: () => void
 }
 
+function renderArgumentSummary(args: DbusArgumentInfo[]): string {
+  if (args.length === 0) {
+    return 'None'
+  }
+  return args
+    .map((arg) => {
+      const typeLabel = formatDbusTypeLabel(arg.type)
+      return arg.name ? `${arg.name}: ${typeLabel}` : typeLabel
+    })
+    .join(', ')
+}
+
 export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
   const [args, setArgs] = useState<any[]>([])
   const { invoke, result, isInvoking, clearResult } = useMethodInvoker()
 
-  // Initialize arguments array based on signature
+  // Initialize arguments array based on inputArgs
   useEffect(() => {
-    if (member.signature) {
-      setArgs(new Array(countDbusArguments(member.signature)).fill(null))
-    } else {
-      setArgs([])
-    }
-  }, [member.signature])
+    setArgs(new Array(member.inputArgs.length).fill(null))
+  }, [member.inputArgs])
 
   const handleInvoke = async () => {
     await invoke({
@@ -70,28 +78,24 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
           </div>
         </div>
 
-        {/* Signatures */}
+        {/* Parameter summaries */}
         <div className="mt-4 flex gap-6">
-          {member.signature && (
-            <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
-              <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
-                Input Signature
-              </div>
-              <div className="font-mono text-sm text-[#00d4ff]">
-                {member.signature}
-              </div>
+          <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
+            <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
+              Input Parameters
             </div>
-          )}
-          {member.returnType && (
-            <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
-              <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
-                Output Signature
-              </div>
-              <div className="font-mono text-sm text-[#00d4ff]">
-                {member.returnType}
-              </div>
+            <div className="font-mono text-sm text-[#00d4ff]">
+              {renderArgumentSummary(member.inputArgs)}
             </div>
-          )}
+          </div>
+          <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
+            <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
+              Output Parameters
+            </div>
+            <div className="font-mono text-sm text-[#00d4ff]">
+              {renderArgumentSummary(member.outputArgs)}
+            </div>
+          </div>
         </div>
       </div>
 
