@@ -14,7 +14,7 @@ import { useAppStore } from '../../stores/appStore'
 import { useSettingsStore } from '../../stores/settingsStore'
 
 export function AppShell() {
-  const { selectedNode, activeBus, clearSelectedMember } = useAppStore()
+  const { selectedNode, activeBus, activeConnectionId, clearSelectedMember } = useAppStore()
   const theme = useSettingsStore((s) => s.theme)
   const [remoteDrawerOpen, setRemoteDrawerOpen] = useState(false)
 
@@ -51,12 +51,14 @@ export function AppShell() {
               <MethodPane
                 member={selectedMethod}
                 busType={activeBus}
+                connectionId={activeConnectionId}
                 onBack={handleBackFromMember}
               />
             ) : selectedProperty ? (
               <PropertyPane
                 member={selectedProperty}
                 busType={activeBus}
+                connectionId={activeConnectionId}
                 onBack={handleBackFromMember}
               />
             ) : (

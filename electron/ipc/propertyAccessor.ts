@@ -1,16 +1,36 @@
 import { ipcMain } from 'electron'
 import { PropertyAccessor } from '../dbus/PropertyAccessor'
+import { RemotePropertyAccessor } from '../dbus/RemotePropertyAccessor'
+import { getTunnelManager } from './ssh'
 import type { GetPropertyParams, SetPropertyParams, GetAllPropertiesParams } from './types'
 
 const propertyAccessor = new PropertyAccessor()
+let remotePropertyAccessor: RemotePropertyAccessor | null = null
+
+function getRemotePropertyAccessor(): RemotePropertyAccessor {
+  if (!remotePropertyAccessor) {
+    remotePropertyAccessor = new RemotePropertyAccessor(getTunnelManager())
+  }
+  return remotePropertyAccessor
+}
 
 /**
  * Register IPC handlers for PropertyAccessor
  */
 export function registerPropertyAccessorHandlers() {
-  // Get a single property
+  // Get a single property (supports remote via connectionId)
   ipcMain.handle('dbus:getProperty', async (_event, params: GetPropertyParams) => {
     try {
+      if (params.connectionId) {
+        return await getRemotePropertyAccessor().getProperty(
+          params.connectionId,
+          params.serviceName,
+          params.path,
+          params.interfaceName,
+          params.propertyName,
+          params.busType
+        )
+      }
       return await propertyAccessor.getProperty(
         params.serviceName,
         params.path,
@@ -24,9 +44,20 @@ export function registerPropertyAccessorHandlers() {
     }
   })
 
-  // Set a single property
+  // Set a single property (supports remote via connectionId)
   ipcMain.handle('dbus:setProperty', async (_event, params: SetPropertyParams) => {
     try {
+      if (params.connectionId) {
+        return await getRemotePropertyAccessor().setProperty(
+          params.connectionId,
+          params.serviceName,
+          params.path,
+          params.interfaceName,
+          params.propertyName,
+          params.value,
+          params.busType
+        )
+      }
       return await propertyAccessor.setProperty(
         params.serviceName,
         params.path,
@@ -41,9 +72,18 @@ export function registerPropertyAccessorHandlers() {
     }
   })
 
-  // Get all properties
+  // Get all properties (supports remote via connectionId)
   ipcMain.handle('dbus:getAllProperties', async (_event, params: GetAllPropertiesParams) => {
     try {
+      if (params.connectionId) {
+        return await getRemotePropertyAccessor().getAllProperties(
+          params.connectionId,
+          params.serviceName,
+          params.path,
+          params.interfaceName,
+          params.busType
+        )
+      }
       return await propertyAccessor.getAllProperties(
         params.serviceName,
         params.path,

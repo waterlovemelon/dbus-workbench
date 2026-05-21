@@ -22,6 +22,10 @@ interface AppStore {
   activeBus: BusType
   setActiveBus: (bus: BusType) => void
 
+  // Active connection (for remote)
+  activeConnectionId: string | null
+  setActiveConnectionId: (id: string | null) => void
+
   // Active mode
   activeMode: ActiveMode
   setActiveMode: (mode: ActiveMode) => void
@@ -44,6 +48,10 @@ export const useAppStore = create<AppStore>((set) => ({
   // Bus type
   activeBus: 'session',
   setActiveBus: (bus) => set({ activeBus: bus }),
+
+  // Active connection (for remote)
+  activeConnectionId: null,
+  setActiveConnectionId: (id) => set({ activeConnectionId: id }),
 
   // Active mode
   activeMode: 'browse',

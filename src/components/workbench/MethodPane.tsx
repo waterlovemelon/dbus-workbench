@@ -9,6 +9,7 @@ import { ChevronLeft, Play, RotateCcw, Copy, Check } from 'lucide-react'
 interface MethodPaneProps {
   member: DbusMemberInfo
   busType: 'session' | 'system'
+  connectionId?: string | null
   onBack: () => void
 }
 
@@ -24,7 +25,7 @@ function renderArgumentSummary(args: DbusArgumentInfo[]): string {
     .join(', ')
 }
 
-export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
+export function MethodPane({ member, busType, connectionId, onBack }: MethodPaneProps) {
   const [args, setArgs] = useState<any[]>([])
   const { invoke, result, isInvoking, clearResult } = useMethodInvoker()
   const [copied, setCopied] = useState(false)
@@ -41,6 +42,7 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
       interfaceName: member.interfaceName,
       methodName: member.name,
       args: args,
+      connectionId: connectionId || undefined,
     })
   }
 

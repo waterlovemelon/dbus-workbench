@@ -29,6 +29,7 @@ export interface InvokeMethodParams {
   methodName: string
   args: any[]
   busType: BusType
+  connectionId?: string
 }
 
 export interface SignalSubscriptionParams {
@@ -45,6 +46,7 @@ export interface GetPropertyParams {
   interfaceName: string
   propertyName: string
   busType: BusType
+  connectionId?: string
 }
 
 export interface SetPropertyParams {
@@ -54,6 +56,7 @@ export interface SetPropertyParams {
   propertyName: string
   value: any
   busType: BusType
+  connectionId?: string
 }
 
 export interface GetAllPropertiesParams {
@@ -61,6 +64,7 @@ export interface GetAllPropertiesParams {
   path: string
   interfaceName: string
   busType: BusType
+  connectionId?: string
 }
 
 export interface ElectronAPI {

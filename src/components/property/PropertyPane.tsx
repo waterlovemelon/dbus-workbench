@@ -15,10 +15,11 @@ import {
 interface PropertyPaneProps {
   member: DbusMemberInfo
   busType: 'session' | 'system'
+  connectionId?: string | null
   onBack: () => void
 }
 
-export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
+export function PropertyPane({ member, busType, connectionId, onBack }: PropertyPaneProps) {
   const { getProperty, setProperty, value, isLoading, error } =
     usePropertyAccessor()
   const [setValue, setSetValue] = useState('')
@@ -45,6 +46,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
       path: member.path,
       interfaceName: member.interfaceName,
       propertyName: member.name,
+      connectionId: connectionId || undefined,
     })
   }
 
@@ -68,6 +70,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
       interfaceName: member.interfaceName,
       propertyName: member.name,
       value: parsedValue,
+      connectionId: connectionId || undefined,
     })
   }
 

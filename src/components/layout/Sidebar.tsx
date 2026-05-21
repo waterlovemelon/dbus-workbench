@@ -33,6 +33,8 @@ export function Sidebar() {
     setSelectedService,
     selectedMemberId,
     setSelectedMember,
+    setActiveBus,
+    setActiveConnectionId,
   } = useAppStore()
 
   const { connections, connectionStates, loadConnections, initStatusListener } = useConnectionStore()
@@ -164,6 +166,8 @@ export function Sidebar() {
     } else {
       setLocalExpandedService(serviceName)
       setLocalExpandedBusType(busType)
+      setActiveBus(busType)
+      setActiveConnectionId(null) // 清除远程连接
       setSelectedService(serviceName, serviceName)
     }
   }
@@ -194,6 +198,8 @@ export function Sidebar() {
           [connId]: { ...prev[connId], members: [], isLoadingMembers: false },
         }))
       })
+      setActiveBus(busType)
+      setActiveConnectionId(connId) // 设置远程连接 ID
       setSelectedService(serviceName, serviceName)
     }
   }
