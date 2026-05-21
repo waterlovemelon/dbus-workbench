@@ -228,11 +228,20 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 px-4 py-3">
-                    <XCircle className="h-4 w-4 shrink-0 text-error" />
-                    <span className="font-mono text-sm text-error">
+                  <div className="flex items-start gap-2 px-4 py-3">
+                    <XCircle className="h-4 w-4 shrink-0 text-error mt-0.5" />
+                    <pre className="max-h-[300px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-error cursor-text"
+                      onClick={(e) => {
+                        const sel = window.getSelection()
+                        if (sel && sel.toString().length > 0) return
+                        const range = document.createRange()
+                        range.selectNodeContents(e.currentTarget)
+                        sel?.removeAllRanges()
+                        sel?.addRange(range)
+                      }}
+                    >
                       {value.error || 'Unknown error'}
-                    </span>
+                    </pre>
                   </div>
                 )}
               </div>
@@ -293,11 +302,20 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
             {/* Set result */}
             {value && !value.success && (
               <div className="mt-3 overflow-hidden rounded-lg border border-error/30 bg-surface-0">
-                <div className="flex items-center gap-2 px-4 py-3">
-                  <XCircle className="h-4 w-4 shrink-0 text-error" />
-                  <span className="font-mono text-sm text-error">
+                <div className="flex items-start gap-2 px-4 py-3">
+                  <XCircle className="h-4 w-4 shrink-0 text-error mt-0.5" />
+                  <pre className="max-h-[300px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-error cursor-text"
+                    onClick={(e) => {
+                      const sel = window.getSelection()
+                      if (sel && sel.toString().length > 0) return
+                      const range = document.createRange()
+                      range.selectNodeContents(e.currentTarget)
+                      sel?.removeAllRanges()
+                      sel?.addRange(range)
+                    }}
+                  >
                     {value.error || 'Unknown error'}
-                  </span>
+                  </pre>
                 </div>
               </div>
             )}
@@ -307,9 +325,20 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
         {/* General error */}
         {error && !value && (
           <div className="overflow-hidden rounded-lg border border-error/30 bg-surface-0">
-            <div className="flex items-center gap-2 px-4 py-3">
-              <XCircle className="h-4 w-4 shrink-0 text-error" />
-              <span className="font-mono text-sm text-error">{error}</span>
+            <div className="flex items-start gap-2 px-4 py-3">
+              <XCircle className="h-4 w-4 shrink-0 text-error mt-0.5" />
+              <pre className="max-h-[300px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-error cursor-text"
+                onClick={(e) => {
+                  const sel = window.getSelection()
+                  if (sel && sel.toString().length > 0) return
+                  const range = document.createRange()
+                  range.selectNodeContents(e.currentTarget)
+                  sel?.removeAllRanges()
+                  sel?.addRange(range)
+                }}
+              >
+                {error}
+              </pre>
             </div>
           </div>
         )}

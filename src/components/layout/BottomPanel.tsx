@@ -71,9 +71,18 @@ export function BottomPanel() {
                     {event.interfaceName}
                   </div>
                   {event.args.length > 0 && (
-                    <div className="mt-0.5 font-mono text-sm text-text-0">
-                      {JSON.stringify(event.args)}
-                    </div>
+                    <pre className="mt-0.5 max-h-[200px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-text-0 cursor-text rounded bg-surface-1 px-2 py-1"
+                      onClick={(e) => {
+                        const sel = window.getSelection()
+                        if (sel && sel.toString().length > 0) return
+                        const range = document.createRange()
+                        range.selectNodeContents(e.currentTarget)
+                        sel?.removeAllRanges()
+                        sel?.addRange(range)
+                      }}
+                    >
+                      {JSON.stringify(event.args, null, 2)}
+                    </pre>
                   )}
                 </div>
               ))}

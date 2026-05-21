@@ -80,7 +80,15 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
         </div>
         <div className="px-5 py-5">
           <div className="rounded-md border border-error/20 bg-surface-1 px-4 py-3">
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-sm text-error">
+            <pre className="max-h-[400px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-error cursor-text"
+              onClick={(e) => {
+                const range = document.createRange()
+                range.selectNodeContents(e.currentTarget)
+                const sel = window.getSelection()
+                sel?.removeAllRanges()
+                sel?.addRange(range)
+              }}
+            >
               {result.error || 'Unknown error'}
             </pre>
           </div>
@@ -117,7 +125,17 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
       </div>
       <div className="px-5 py-5">
         <div className="rounded-md border border-success/10 bg-surface-1 px-4 py-3">
-          <pre className="max-h-[400px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-text-0">
+          <pre
+            className="max-h-[400px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words font-mono text-sm text-text-0 cursor-text"
+            onClick={(e) => {
+              const sel = window.getSelection()
+              if (sel && sel.toString().length > 0) return
+              const range = document.createRange()
+              range.selectNodeContents(e.currentTarget)
+              sel?.removeAllRanges()
+              sel?.addRange(range)
+            }}
+          >
             {formatResult(result.value)}
           </pre>
         </div>
