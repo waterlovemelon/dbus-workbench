@@ -218,19 +218,19 @@ export function Sidebar() {
     return (
       <div className="mb-1">
         {/* Group header */}
-        <div className="flex items-center gap-1.5 border-b border-[#3e3e3e] px-2 py-1.5">
+        <div className="flex items-center gap-1.5 border-b border-border px-2 py-1.5">
           {statusIcon}
-          <span className="text-[11px] font-medium text-[#858585]">{label}</span>
+          <span className="text-sm font-medium text-text-2">{label}</span>
         </div>
 
         {/* Service list */}
         <div className="py-0.5">
           {isLoadingServices ? (
-            <div className="px-2 py-2 text-center text-[11px] text-[#858585]">
+            <div className="px-2 py-2 text-center text-sm text-text-2">
               加载服务中...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="px-2 py-2 text-center text-[11px] text-[#858585]">
+            <div className="px-2 py-2 text-center text-sm text-text-2">
               {services.length === 0 ? '无服务' : '无匹配服务'}
             </div>
           ) : (
@@ -243,12 +243,12 @@ export function Sidebar() {
                 <div key={service}>
                   <button
                     onClick={() => onToggleService(service)}
-                    className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-xs transition-colors ${
+                    className={`flex w-full items-center gap-1 rounded px-2 py-1 text-left text-base transition-colors ${
                       isSelected && !isExpanded
-                        ? 'bg-[#094771] text-[#cccccc]'
+                        ? 'bg-selected-bg text-selected-text'
                         : isExpanded
-                          ? 'bg-[#2d2d2d] text-[#cccccc]'
-                          : 'hover:bg-[#2d2d2d]'
+                          ? 'bg-surface-2 text-text-0'
+                          : 'hover:bg-surface-2'
                     }`}
                   >
                     <ChevronRight
@@ -260,7 +260,7 @@ export function Sidebar() {
                   {isExpanded && (
                     <div className="ml-1">
                       {isLoadingMembers ? (
-                        <div className="px-2 py-1 text-[11px] text-[#858585]">
+                        <div className="px-2 py-1 text-sm text-text-2">
                           加载成员中...
                         </div>
                       ) : treeNodes.length > 0 ? (
@@ -274,7 +274,7 @@ export function Sidebar() {
                           />
                         ))
                       ) : (
-                        <div className="px-2 py-1 text-[11px] text-[#858585]">
+                        <div className="px-2 py-1 text-sm text-text-2">
                           无成员
                         </div>
                       )}
@@ -306,17 +306,6 @@ export function Sidebar() {
   const connState = activeConn ? connectionStates[activeConn.id] : null
   const isConnected = isLocal || connState?.status === 'connected'
 
-  // Current source status for the indicator dot
-  const sourceStatus: 'green' | 'gray' | 'red' | 'yellow' = isLocal
-    ? 'green'
-    : connState?.status === 'connected'
-      ? 'green'
-      : connState?.status === 'connecting'
-        ? 'yellow'
-        : connState?.status === 'error'
-          ? 'red'
-          : 'gray'
-
   // Current source's service list + expanded state (for footer count)
   const remoteState = activeConn ? remoteStates[activeConn.id] : null
   const currentServices = (() => {
@@ -331,70 +320,55 @@ export function Sidebar() {
   })()
 
   return (
-    <div className="flex h-full flex-col border-r border-[#3e3e3e] bg-[#1e1e1e]">
-      {/* Source Selector Dropdown */}
-      <div className="border-b border-[#3e3e3e] bg-[#252526] p-2">
-        <select
-          value={selectedSource}
-          onChange={(e) => setSelectedSource(e.target.value)}
-          className="h-7 w-full appearance-none rounded border border-[#3e3e3e] bg-[#2d2d2d] px-2 pr-6 text-xs text-[#cccccc] outline-none focus:border-[#4ec9b0]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23858585'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 8px center',
-          }}
-        >
-          <optgroup label="本地">
-            <option value="local">
-              本地 D-Bus
-            </option>
-          </optgroup>
-          {allConnections.length > 0 && (
-            <optgroup label="远程连接">
-              {allConnections.map((conn) => {
-                const state = connectionStates[conn.id]
-                const dot = state?.status === 'connected' ? '● ' : state?.status === 'connecting' ? '○ ' : '○ '
-                return (
-                  <option key={conn.id} value={conn.id}>
-                    {dot}{conn.name} ({conn.host})
-                  </option>
-                )
-              })}
-            </optgroup>
-          )}
-        </select>
-        {/* Source detail line */}
-        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-[#858585]">
-          <span
-            className={`h-1.5 w-1.5 rounded-full ${
-              sourceStatus === 'green'
-                ? 'bg-[#4ec9b0]'
-                : sourceStatus === 'red'
-                  ? 'bg-[#f44747]'
-                  : sourceStatus === 'yellow'
-                    ? 'bg-[#e5c07b]'
-                    : 'bg-[#555]'
-            }`}
-          />
-          {!isLocal && activeConn && (
-            <span>{activeConn.user}@{activeConn.host}:{activeConn.port}</span>
-          )}
-          {!isLocal && connState?.status === 'error' && connState.error && (
-            <span className="ml-auto text-[10px] text-[#f44747]" title={connState.error}>
-              Error
-            </span>
-          )}
-        </div>
+    <div className="flex h-full flex-col border-r border-border bg-background">
+      {/* Source Selector */}
+      <div className="border-b border-border bg-surface-1 p-2">
+        {connectedRemoteConnections.length > 0 && (
+          <>
+            <select
+              value={selectedSource}
+              onChange={(e) => setSelectedSource(e.target.value)}
+              className="h-7 w-full appearance-none rounded border border-border bg-surface-2 px-2 pr-6 text-sm text-text-0 outline-none focus:border-info"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2371717a'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 8px center',
+              }}
+            >
+              <optgroup label="本地">
+                <option value="local">本地 D-Bus</option>
+              </optgroup>
+              <optgroup label="远程连接">
+                {allConnections.map((conn) => (
+                    <option key={conn.id} value={conn.id}>
+                      {conn.name} ({conn.host})
+                    </option>
+                ))}
+              </optgroup>
+            </select>
+            {/* Remote connection detail */}
+            {!isLocal && activeConn && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-sm text-text-2">
+                <span>{activeConn.user}@{activeConn.host}:{activeConn.port}</span>
+                {connState?.status === 'error' && connState.error && (
+                  <span className="ml-auto text-[11px] text-error" title={connState.error}>
+                    Error
+                  </span>
+                )}
+              </div>
+            )}
+          </>
+        )}
         {/* Bus filter tabs */}
-        <div className="mt-1.5 flex gap-0.5 rounded bg-[#1e1e1e] p-0.5">
+        <div className="mt-1.5 flex gap-0.5 rounded bg-surface-0 p-0.5">
           {([['全部', 'all'], ['Session', 'session'], ['System', 'system']] as const).map(([label, value]) => (
             <button
               key={value}
               onClick={() => setBusFilter(value)}
-              className={`flex-1 rounded px-1.5 py-0.5 text-[10px] transition-colors ${
+              className={`flex-1 rounded px-1.5 py-0.5 text-sm transition-colors ${
                 busFilter === value
-                  ? 'bg-[#4ec9b0] text-[#1e1e1e] font-medium'
-                  : 'text-[#858585] hover:bg-[#2d2d2d]'
+                  ? 'bg-success text-success-foreground font-medium'
+                  : 'text-text-2 hover:bg-surface-2'
               }`}
             >
               {label}
@@ -404,15 +378,15 @@ export function Sidebar() {
       </div>
 
       {/* Search Bar */}
-      <div className="border-b border-[#3e3e3e] p-2">
+      <div className="border-b border-border p-2">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-[#858585]" />
+          <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-text-2" />
           <Input
             type="text"
             placeholder="搜索服务..."
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
-            className="h-7 pl-7 text-xs"
+            className="h-7 pl-7 text-sm"
           />
         </div>
       </div>
@@ -424,24 +398,22 @@ export function Sidebar() {
             // Local: show groups based on busFilter
             <>
               {(busFilter === 'all' || busFilter === 'session') && renderServiceGroup(
-                '本地 Session',
+                'Session',
                 localSessionServices,
                 localExpandedBusType === 'session' ? localExpandedService : null,
                 localExpandedBusType === 'session' ? localMembers : [],
                 isLoadingLocalSession,
                 localExpandedBusType === 'session' ? isLoadingLocalMembers : false,
                 (serviceName) => handleToggleLocalService(serviceName, 'session'),
-                <span className="h-2 w-2 rounded-full bg-[#4ec9b0]" />,
               )}
               {(busFilter === 'all' || busFilter === 'system') && renderServiceGroup(
-                '本地 System',
+                'System',
                 localSystemServices,
                 localExpandedBusType === 'system' ? localExpandedService : null,
                 localExpandedBusType === 'system' ? localMembers : [],
                 isLoadingLocalSystem,
                 localExpandedBusType === 'system' ? isLoadingLocalMembers : false,
                 (serviceName) => handleToggleLocalService(serviceName, 'system'),
-                <span className="h-2 w-2 rounded-full bg-[#c586c0]" />,
               )}
             </>
           ) : (
@@ -455,7 +427,7 @@ export function Sidebar() {
                 remoteState?.isLoadingSession ?? true,
                 remoteState?.expandedBusType === 'session' ? (remoteState?.isLoadingMembers ?? false) : false,
                 (serviceName) => activeConn && handleToggleRemoteService(activeConn.id, serviceName, 'session'),
-                <Wifi className="h-3 w-3 text-[#4ec9b0]" />,
+                <Wifi className="h-3 w-3 text-success" />,
               )}
               {(busFilter === 'all' || busFilter === 'system') && renderServiceGroup(
                 `${activeConn?.name ?? ''} - System`,
@@ -473,14 +445,14 @@ export function Sidebar() {
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
             {connState?.status === 'connecting' ? (
               <>
-                <Wifi className="h-5 w-5 text-[#e5c07b]" />
-                <span className="text-xs text-[#858585]">连接中...</span>
+                <Wifi className="h-5 w-5 text-warning" />
+                <span className="text-sm text-text-2">连接中...</span>
               </>
             ) : (
               <>
-                <WifiOff className="h-5 w-5 text-[#555]" />
-                <span className="text-xs text-[#858585]">未连接</span>
-                <span className="text-[11px] text-[#3e3e3e]">通过远程连接菜单连接</span>
+                <WifiOff className="h-5 w-5 text-text-3" />
+                <span className="text-sm text-text-2">未连接</span>
+                <span className="text-sm text-text-3">通过远程连接菜单连接</span>
               </>
             )}
           </div>
@@ -488,7 +460,7 @@ export function Sidebar() {
       </div>
 
       {/* Footer */}
-      <div className="border-t border-[#3e3e3e] px-2 py-1 text-[11px] text-[#858585]">
+      <div className="border-t border-border px-2 py-1 text-sm text-text-2">
         {isConnected ? (
           <>
             {currentServices.length} 服务

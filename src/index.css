@@ -4,6 +4,68 @@
 
 @layer base {
   :root {
+    /* shadcn/ui core variables — light theme (GitHub-inspired) */
+    --background: 210 33% 97%;
+    --foreground: 210 12% 14%;
+
+    --card: 210 33% 97%;
+    --card-foreground: 210 12% 14%;
+
+    --popover: 210 33% 97%;
+    --popover-foreground: 210 12% 14%;
+
+    --primary: 174 60% 41%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 213 28% 95%;
+    --secondary-foreground: 210 12% 14%;
+
+    --muted: 213 28% 95%;
+    --muted-foreground: 210 8% 48%;
+
+    --accent: 213 28% 95%;
+    --accent-foreground: 210 12% 14%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 17% 85%;
+    --input: 210 17% 85%;
+    --ring: 174 60% 41%;
+
+    --radius: 0.5rem;
+
+    /* Extended semantic tokens — light theme */
+    --surface0: 213 28% 95%;
+    --surface1: 216 23% 91%;
+    --surface2: 210 25% 93%;
+    --surface3: 210 33% 97%;
+
+    --text0: 210 12% 14%;
+    --text1: 210 10% 32%;
+    --text2: 210 8% 43%;
+    --text3: 210 6% 58%;
+
+    --success: 160 51% 49%;
+    --success-foreground: 0 0% 100%;
+    --error: 0 72% 51%;
+    --error-foreground: 0 0% 100%;
+    --info: 212 92% 45%;
+    --warning: 38 92% 50%;
+
+    --code-bg: 213 28% 95%;
+    --code-text: 174 60% 35%;
+
+    --selected-bg: 174 40% 88%;
+    --selected-text: 174 60% 35%;
+
+    --scrollbar-track: 210 12% 94%;
+    --scrollbar-thumb: 210 10% 80%;
+    --scrollbar-thumb-hover: 210 10% 70%;
+  }
+
+  .dark {
+    /* shadcn/ui core variables — dark theme */
     --background: 0 0% 12%;
     --foreground: 0 0% 95%;
 
@@ -13,7 +75,7 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 217 91% 60%;
+    --primary: 174 60% 41%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 15%;
@@ -30,9 +92,31 @@
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 217 91% 60%;
+    --ring: 174 60% 41%;
 
-    --radius: 0.5rem;
+    /* Extended semantic tokens — dark theme */
+    --surface0: 0 0% 6%;
+    --surface1: 0 0% 9%;
+    --surface2: 0 0% 14%;
+    --surface3: 0 0% 18%;
+
+    --text0: 0 0% 90%;
+    --text1: 0 0% 75%;
+    --text2: 0 0% 52%;
+    --text3: 0 0% 33%;
+
+    --success: 160 51% 49%;
+    --success-foreground: 0 0% 100%;
+    --error: 0 72% 45%;
+    --error-foreground: 0 0% 100%;
+    --info: 199 89% 48%;
+    --warning: 38 92% 50%;
+
+    --code-bg: 0 0% 18%;
+    --code-text: 174 50% 55%;
+
+    --selected-bg: 210 50% 22%;
+    --selected-text: 0 0% 80%;
   }
 }
 
@@ -49,21 +133,21 @@
   }
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: hsl(var(--scrollbar-track));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
+  background: hsl(var(--scrollbar-thumb));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
+  background: hsl(var(--scrollbar-thumb-hover));
 }

@@ -68,7 +68,7 @@ export function TreeNode({ node, selectedId, onSelect, level }: TreeNodeProps) {
           <span className="w-3" />
         )}
         {getIcon()}
-        <span className="truncate text-xs">
+        <span className="truncate text-base">
           {node.type === 'member' && node.member ? formatMemberLabel(node.member) : node.label}
         </span>
       </div>

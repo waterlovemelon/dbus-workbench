@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
+import { useSettingsStore } from '../../stores/settingsStore'
 
 interface TopBarProps {
   onOpenRemoteDrawer?: () => void
@@ -13,6 +14,7 @@ interface TopBarProps {
 export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const { theme, setTheme } = useSettingsStore()
 
   useEffect(() => {
     if (!menuOpen) return
@@ -28,18 +30,18 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
   const menuItems = [
     { label: '设置', action: () => {} },
     { label: '远程连接', action: () => onOpenRemoteDrawer?.() },
-    { label: '主题', action: () => {} },
+    { label: theme === 'dark' ? '切换亮色主题' : '切换暗色主题', action: () => setTheme(theme === 'dark' ? 'light' : 'dark') },
     { label: '关于', action: () => {} },
   ]
 
   return (
     <div
-      className="flex h-[36px] items-center justify-between bg-[#252526] border-b border-[#3e3e3e] px-2"
+      className="flex h-[36px] items-center justify-between bg-surface-1 border-b border-border px-2"
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       {/* Left: App title */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-[#858585]">D-Bus Workbench</span>
+        <span className="text-sm text-text-2">D-Bus Workbench</span>
       </div>
 
       {/* Center: empty spacer for layout balance */}
@@ -54,13 +56,13 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
         <div ref={menuRef} className="relative">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="h-7 w-7 flex items-center justify-center rounded text-[#858585] hover:bg-[#383838] transition-colors"
+            className="h-7 w-7 flex items-center justify-center rounded text-text-2 hover:bg-surface-2 transition-colors"
           >
             <Menu className="h-4 w-4" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-40 rounded-md border border-[#3e3e3e] bg-[#2d2d2d] py-1 shadow-lg z-50">
+            <div className="absolute right-0 top-full mt-1 w-40 rounded-md border border-border bg-surface-3 py-1 shadow-lg z-50">
               {menuItems.map((item) => (
                 <button
                   key={item.label}
@@ -68,13 +70,9 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
                     item.action()
                     setMenuOpen(false)
                   }}
-                  className={`w-full px-3 py-1.5 text-left text-xs transition-colors ${
-                    item.label === '远程连接'
-                      ? 'text-[#4ec9b0] hover:bg-[#383838]'
-                      : 'text-[#cccccc] hover:bg-[#383838]'
-                  }`}
+                  className="w-full px-3 py-1.5 text-left text-sm text-text-0 hover:bg-surface-2 transition-colors"
                 >
-                  {item.label === '远程连接' ? `▶ ${item.label}` : item.label}
+                  {item.label}
                 </button>
               ))}
             </div>
@@ -84,19 +82,19 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
         {/* Window controls */}
         <button
           onClick={() => window.electronAPI.minimizeWindow()}
-          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-[#858585] hover:bg-[#383838]"
+          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-text-2 hover:bg-surface-2"
         >
           _
         </button>
         <button
           onClick={() => window.electronAPI.maximizeWindow()}
-          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-[#858585] hover:bg-[#383838]"
+          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-text-2 hover:bg-surface-2"
         >
           □
         </button>
         <button
           onClick={() => window.electronAPI.closeWindow()}
-          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-[#858585] hover:bg-[#f44747] hover:text-white"
+          className="h-7 w-7 flex items-center justify-center rounded text-[11px] text-text-2 hover:bg-error hover:text-white"
         >
           ×
         </button>

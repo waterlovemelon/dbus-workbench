@@ -70,22 +70,22 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a0f] text-[#e5e7eb]">
+    <div className="h-full flex flex-col bg-background text-text-0">
       {/* Header */}
-      <div className="border-b border-[#1e2028] px-6 py-5">
+      <div className="border-b border-border px-6 py-5">
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={onBack}
-            className="p-2 hover:bg-[#1a1a24] rounded-lg transition-colors group"
+            className="p-2 hover:bg-surface-0 rounded-lg transition-colors group"
             aria-label="Go back"
           >
-            <ChevronLeft className="w-5 h-5 text-[#8b8d94] group-hover:text-[#e5e7eb] transition-colors" />
+            <ChevronLeft className="w-5 h-5 text-text-2 group-hover:text-text-0 transition-colors" />
           </button>
           <div className="flex-1">
-            <div className="text-[11px] text-[#8b8d94] font-mono">
+            <div className="text-sm text-text-2 font-mono">
               {member.interfaceName}
             </div>
-            <h2 className="text-xl font-medium text-[#e5e7eb] font-mono tracking-tight">
+            <h2 className="text-lg font-medium text-text-0 font-mono tracking-tight">
               {member.name}
             </h2>
           </div>
@@ -93,19 +93,19 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
 
         {/* Parameter summaries */}
         <div className="mt-4 flex gap-6">
-          <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
-            <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
+          <div className="flex-1 bg-surface-0 rounded-lg px-4 py-3 border border-border">
+            <div className="text-sm text-text-2 uppercase tracking-wider mb-1">
               Input Parameters
             </div>
-            <div className="font-mono text-sm text-[#e5e7eb]">
+            <div className="font-mono text-sm text-text-0">
               {renderArgumentSummary(member.inputArgs)}
             </div>
           </div>
-          <div className="flex-1 bg-[#0f0f15] rounded-lg px-4 py-3 border border-[#1e2028]">
-            <div className="text-xs text-[#6b7280] uppercase tracking-wider mb-1">
+          <div className="flex-1 bg-surface-0 rounded-lg px-4 py-3 border border-border">
+            <div className="text-sm text-text-2 uppercase tracking-wider mb-1">
               Output Parameters
             </div>
-            <div className="font-mono text-sm text-[#e5e7eb]">
+            <div className="font-mono text-sm text-text-0">
               {renderArgumentSummary(member.outputArgs)}
             </div>
           </div>
@@ -117,7 +117,7 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
         {/* Arguments Section */}
         {member.inputArgs.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-[#c5c7ce] uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-text-1 uppercase tracking-wider mb-4">
               Arguments
             </h3>
             <ArgumentForm
@@ -134,7 +134,7 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
           <button
             onClick={handleInvoke}
             disabled={isInvoking}
-            className="flex items-center gap-2 px-4 py-2 bg-[#4ec9b0] text-[#1e1e1e] font-medium rounded hover:bg-[#5fd4bc] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs"
+            className="flex items-center gap-2 px-4 py-2 bg-success text-success-foreground font-medium rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
           >
             <Play className="w-4 h-4" />
             {isInvoking ? 'Invoking...' : 'Invoke'}
@@ -142,14 +142,14 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
           <button
             onClick={handleReset}
             disabled={isInvoking}
-            className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#cccccc] rounded hover:bg-[#383838] disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-[#3e3e3e] text-xs"
+            className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-1 rounded hover:bg-surface-3 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-border text-sm"
           >
             <RotateCcw className="w-4 h-4" />
             Reset
           </button>
           <button
             onClick={handleCopyCommand}
-            className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#858585] rounded hover:bg-[#383838] hover:text-[#d4d4d4] transition-colors border border-[#3e3e3e] text-xs"
+            className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-2 rounded hover:bg-surface-3 hover:text-text-0 transition-colors border border-border text-sm"
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             Copy Command
@@ -157,8 +157,8 @@ export function MethodPane({ member, busType, onBack }: MethodPaneProps) {
         </div>
 
         {/* Command Box */}
-        <div className="bg-[#2d2d2d] border border-[#3e3e3e] rounded p-3 mb-6">
-          <code className="font-mono text-xs text-[#4ec9b0] break-all leading-relaxed">
+        <div className="bg-code-bg border border-border rounded p-3 mb-6">
+          <code className="font-mono text-sm text-code-text break-all leading-relaxed">
             {buildDbusSendCmd()}
           </code>
         </div>

@@ -3,7 +3,7 @@
  * Main application layout with resizable panels
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { TopBar } from './TopBar'
 import { Sidebar } from './Sidebar'
@@ -11,10 +11,16 @@ import { MethodPane } from '../workbench/MethodPane'
 import { PropertyPane } from '../property/PropertyPane'
 import { RemoteDrawer } from '../remote/RemoteDrawer'
 import { useAppStore } from '../../stores/appStore'
+import { useSettingsStore } from '../../stores/settingsStore'
 
 export function AppShell() {
   const { selectedNode, activeBus, clearSelectedMember } = useAppStore()
+  const theme = useSettingsStore((s) => s.theme)
   const [remoteDrawerOpen, setRemoteDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
 
   const selectedMethod = selectedNode?.member?.type === 'method' ? selectedNode.member : null
   const selectedProperty = selectedNode?.member?.type === 'property' ? selectedNode.member : null
@@ -57,7 +63,7 @@ export function AppShell() {
               <div className="flex h-full items-center justify-center bg-muted/30">
                 {selectedNode ? (
                   <div className="text-center">
-                    <h2 className="text-lg font-bold">{selectedNode.label}</h2>
+                    <h2 className="text-base font-bold">{selectedNode.label}</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {selectedNode.type === 'member' && selectedNode.member
                         ? `${selectedNode.member.interfaceName} - ${selectedNode.member.type}`
@@ -88,7 +94,7 @@ export function AppShell() {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <h2 className="text-2xl font-bold">D-Bus Workbench</h2>
+                    <h2 className="text-xl font-bold">D-Bus Workbench</h2>
                     <p className="mt-2 text-muted-foreground">
                       Select a service to explore
                     </p>

@@ -119,22 +119,22 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a0f] text-[#e5e7eb]">
+    <div className="h-full flex flex-col bg-background text-text-0">
       {/* Header */}
-      <div className="border-b border-[#1e2028] px-6 py-5">
+      <div className="border-b border-border px-6 py-5">
         <div className="flex items-center gap-3 mb-3">
           <button
             onClick={onBack}
-            className="p-2 hover:bg-[#1a1a24] rounded-lg transition-colors group"
+            className="p-2 hover:bg-surface-0 rounded-lg transition-colors group"
             aria-label="Go back"
           >
-            <ChevronLeft className="w-5 h-5 text-[#8b8d94] group-hover:text-[#e5e7eb] transition-colors" />
+            <ChevronLeft className="w-5 h-5 text-text-2 group-hover:text-text-0 transition-colors" />
           </button>
           <div className="flex-1">
-            <div className="text-[11px] text-[#8b8d94] font-mono">
+            <div className="text-sm text-text-2 font-mono">
               {member.interfaceName}
             </div>
-            <h2 className="text-xl font-medium text-[#e5e7eb] font-mono tracking-tight">
+            <h2 className="text-lg font-medium text-text-0 font-mono tracking-tight">
               {member.name}
             </h2>
           </div>
@@ -142,20 +142,20 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
 
         {/* Metadata chips */}
         <div className="flex flex-wrap gap-2 ml-12">
-          <span className="inline-flex items-center rounded-md bg-[#1a1a24] border border-[#2a2a35] px-2.5 py-1 text-xs font-mono text-[#c5c7ce]">
-            <span className="text-[#6b7280] mr-1.5">type:</span>
+          <span className="inline-flex items-center rounded-md bg-surface-1 border border-border px-2.5 py-1 text-sm font-mono text-text-1">
+            <span className="text-text-2 mr-1.5">type:</span>
             {typeLabel}
           </span>
-          <span className="inline-flex items-center rounded-md bg-[#1a1a24] border border-[#2a2a35] px-2.5 py-1 text-xs font-mono text-[#c5c7ce]">
-            <span className="text-[#6b7280] mr-1.5">access:</span>
+          <span className="inline-flex items-center rounded-md bg-surface-1 border border-border px-2.5 py-1 text-sm font-mono text-text-1">
+            <span className="text-text-2 mr-1.5">access:</span>
             {access}
           </span>
-          <span className="inline-flex items-center rounded-md bg-[#1a1a24] border border-[#2a2a35] px-2.5 py-1 text-xs font-mono text-[#c5c7ce]">
-            <span className="text-[#6b7280] mr-1.5">path:</span>
+          <span className="inline-flex items-center rounded-md bg-surface-1 border border-border px-2.5 py-1 text-sm font-mono text-text-1">
+            <span className="text-text-2 mr-1.5">path:</span>
             {member.path}
           </span>
-          <span className="inline-flex items-center rounded-md bg-[#1a1a24] border border-[#2a2a35] px-2.5 py-1 text-xs font-mono text-[#c5c7ce]">
-            <span className="text-[#6b7280] mr-1.5">interface:</span>
+          <span className="inline-flex items-center rounded-md bg-surface-1 border border-border px-2.5 py-1 text-sm font-mono text-text-1">
+            <span className="text-text-2 mr-1.5">interface:</span>
             {member.interfaceName}
           </span>
         </div>
@@ -170,7 +170,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
               <button
                 onClick={handleGet}
                 disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4ec9b0] text-[#1e1e1e] font-medium rounded hover:bg-[#5fd4bc] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs"
+                className="flex items-center gap-2 px-4 py-2 bg-success text-success-foreground font-medium rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -181,7 +181,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
               </button>
               <button
                 onClick={() => handleCopyCommand('Get')}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#858585] rounded hover:bg-[#383838] hover:text-[#d4d4d4] transition-colors border border-[#3e3e3e] text-xs"
+                className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-2 rounded hover:bg-surface-3 hover:text-text-0 transition-colors border border-border text-sm"
               >
                 {copiedCmd === 'Get' ? (
                   <Check className="h-4 w-4" />
@@ -193,8 +193,8 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
             </div>
 
             {/* Get Command Box */}
-            <div className="bg-[#2d2d2d] border border-[#3e3e3e] rounded p-3 mb-4">
-              <code className="font-mono text-xs text-[#4ec9b0] break-all leading-relaxed">
+            <div className="bg-code-bg border border-border rounded p-3 mb-4">
+              <code className="font-mono text-sm text-code-text break-all leading-relaxed">
                 {buildDbusSendCmd('Get')}
               </code>
             </div>
@@ -204,19 +204,19 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
               <div
                 className={`overflow-hidden rounded-lg border ${
                   value.success
-                    ? 'border-[#4ec9b0]/30'
-                    : 'border-[#f44747]/30'
-                } bg-[#0f0f15]`}
+                    ? 'border-success/30'
+                    : 'border-error/30'
+                } bg-surface-0`}
               >
                 {value.success ? (
                   <div className="px-4 py-3">
-                    <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-words font-mono text-sm text-[#e5e7eb]">
+                    <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-words font-mono text-sm text-text-0">
                       {formatValue(value.value)}
                     </pre>
                     {typeof value.value !== 'undefined' && (
-                      <div className="mt-2 font-mono text-xs text-[#6b7280]">
+                      <div className="mt-2 font-mono text-sm text-text-2">
                         Value type:{' '}
-                        <span className="text-[#4ec9b0]">
+                        <span className="text-success">
                           {Array.isArray(value.value)
                             ? 'array'
                             : typeof value.value}
@@ -226,8 +226,8 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 px-4 py-3">
-                    <XCircle className="h-4 w-4 shrink-0 text-[#f44747]" />
-                    <span className="font-mono text-sm text-[#f44747]">
+                    <XCircle className="h-4 w-4 shrink-0 text-error" />
+                    <span className="font-mono text-sm text-error">
                       {value.error || 'Unknown error'}
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
         {canWrite && (
           <section>
             <div className="mb-3">
-              <label className="block text-xs text-[#6b7280] uppercase tracking-wider mb-2">
+              <label className="block text-sm text-text-2 uppercase tracking-wider mb-2">
                 New Value
               </label>
               <input
@@ -250,14 +250,14 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
                 onChange={(e) => setSetValue(e.target.value)}
                 placeholder={`Enter value (${typeLabel})`}
                 disabled={isLoading}
-                className="w-full rounded-md border border-[#2a2a35] bg-[#0f0f15] px-3 py-2 font-mono text-sm text-[#e5e7eb] placeholder:text-[#4b4d54] focus:border-[#4ec9b0] focus:outline-none focus:ring-1 focus:ring-[#4ec9b0]/30 disabled:opacity-50"
+                className="w-full rounded-md border border-border bg-surface-0 px-3 py-2 font-mono text-sm text-text-0 placeholder:text-text-3 focus:border-success focus:outline-none focus:ring-1 focus:ring-success/30 disabled:opacity-50"
               />
             </div>
             <div className="flex items-center gap-3 mb-3">
               <button
                 onClick={handleSet}
                 disabled={isLoading || !setValue}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4ec9b0] text-[#1e1e1e] font-medium rounded hover:bg-[#5fd4bc] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs"
+                className="flex items-center gap-2 px-4 py-2 bg-success text-success-foreground font-medium rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -269,7 +269,7 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
               <button
                 onClick={() => handleCopyCommand('Set')}
                 disabled={!setValue}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#858585] rounded hover:bg-[#383838] hover:text-[#d4d4d4] transition-colors border border-[#3e3e3e] text-xs disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-2 rounded hover:bg-surface-3 hover:text-text-0 transition-colors border border-border text-sm disabled:opacity-50"
               >
                 {copiedCmd === 'Set' ? (
                   <Check className="h-4 w-4" />
@@ -281,18 +281,18 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
             </div>
 
             {/* Set Command Box */}
-            <div className="bg-[#2d2d2d] border border-[#3e3e3e] rounded p-3 mb-4">
-              <code className="font-mono text-xs text-[#4ec9b0] break-all leading-relaxed">
+            <div className="bg-code-bg border border-border rounded p-3 mb-4">
+              <code className="font-mono text-sm text-code-text break-all leading-relaxed">
                 {buildDbusSendCmd('Set')}
               </code>
             </div>
 
             {/* Set result */}
             {value && !value.success && (
-              <div className="mt-3 overflow-hidden rounded-lg border border-[#f44747]/30 bg-[#0f0f15]">
+              <div className="mt-3 overflow-hidden rounded-lg border border-error/30 bg-surface-0">
                 <div className="flex items-center gap-2 px-4 py-3">
-                  <XCircle className="h-4 w-4 shrink-0 text-[#f44747]" />
-                  <span className="font-mono text-sm text-[#f44747]">
+                  <XCircle className="h-4 w-4 shrink-0 text-error" />
+                  <span className="font-mono text-sm text-error">
                     {value.error || 'Unknown error'}
                   </span>
                 </div>
@@ -303,17 +303,17 @@ export function PropertyPane({ member, busType, onBack }: PropertyPaneProps) {
 
         {/* General error */}
         {error && !value && (
-          <div className="overflow-hidden rounded-lg border border-[#f44747]/30 bg-[#0f0f15]">
+          <div className="overflow-hidden rounded-lg border border-error/30 bg-surface-0">
             <div className="flex items-center gap-2 px-4 py-3">
-              <XCircle className="h-4 w-4 shrink-0 text-[#f44747]" />
-              <span className="font-mono text-sm text-[#f44747]">{error}</span>
+              <XCircle className="h-4 w-4 shrink-0 text-error" />
+              <span className="font-mono text-sm text-error">{error}</span>
             </div>
           </div>
         )}
 
         {/* Access info notice */}
         {!canRead && !canWrite && (
-          <div className="rounded-lg border border-[#2a2a35] bg-[#0f0f15] px-4 py-6 text-center text-sm text-[#6b7280]">
+          <div className="rounded-lg border border-border bg-surface-0 px-4 py-6 text-center text-sm text-text-2">
             Property access mode &quot;{access}&quot; is not recognized.
           </div>
         )}
