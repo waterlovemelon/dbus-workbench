@@ -349,7 +349,7 @@ export function Sidebar() {
                             node={node}
                             selectedId={selectedMemberId}
                             onSelect={handleSelectMember}
-                            level={0}
+                            level={2}
                           />
                         ))
                       ) : (
