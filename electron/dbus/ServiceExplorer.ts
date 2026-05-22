@@ -47,6 +47,135 @@ export class ServiceExplorer {
   }
 
   /**
+   * Get info for all services on a bus in a single connection.
+   * Uses one ListNames call + parallel GetNameOwner/GetConnectionUnixProcessID.
+   */
+  async getAllServiceInfo(busType: BusType): Promise<Map<string, ServiceInfo>> {
+    const bus = this.getBus(busType)
+    const result = new Map<string, ServiceInfo>()
+
+    try {
+      // Get all names (well-known + unique) in one call
+      const namesReply = await bus.call(new Message({
+        type: MessageType.METHOD_CALL,
+        destination: 'org.freedesktop.DBus',
+        path: '/org/freedesktop/DBus',
+        interface: 'org.freedesktop.DBus',
+        member: 'ListNames',
+      }))
+
+      if (namesReply.type !== MessageType.METHOD_RETURN) {
+        return result
+      }
+
+      const allNames: string[] = namesReply.body[0]
+      const wellKnownNames = allNames.filter(n => !n.startsWith(':'))
+
+      // Get activatable names to distinguish active vs activatable
+      let activatableNames = new Set<string>()
+      try {
+        const activatableReply = await bus.call(new Message({
+          type: MessageType.METHOD_CALL,
+          destination: 'org.freedesktop.DBus',
+          path: '/org/freedesktop/DBus',
+          interface: 'org.freedesktop.DBus',
+          member: 'ListActivatableNames',
+        }))
+        if (activatableReply.type === MessageType.METHOD_RETURN) {
+          activatableNames = new Set(activatableReply.body[0])
+        }
+      } catch {
+        // ignore
+      }
+
+      // Fetch unique name for each well-known name (parallel, with concurrency limit)
+      const CONCURRENCY = 10
+      for (let i = 0; i < wellKnownNames.length; i += CONCURRENCY) {
+        const batch = wellKnownNames.slice(i, i + CONCURRENCY)
+        const infos = await Promise.all(batch.map(async (serviceName) => {
+          try {
+            const ownerReply = await bus.call(new Message({
+              type: MessageType.METHOD_CALL,
+              destination: 'org.freedesktop.DBus',
+              path: '/org/freedesktop/DBus',
+              interface: 'org.freedesktop.DBus',
+              member: 'GetNameOwner',
+              signature: 's',
+              body: [serviceName],
+            }))
+            if (ownerReply.type === MessageType.METHOD_RETURN) {
+              const uniqueName: string = ownerReply.body[0]
+              return { serviceName, uniqueName }
+            }
+          } catch {
+            // not active
+          }
+          return { serviceName, uniqueName: null as string | null }
+        }))
+
+        // Fetch PID for each active service (parallel)
+        const withPid = await Promise.all(infos.map(async (info) => {
+          if (!info.uniqueName) {
+            const isActivatable = activatableNames.has(info.serviceName)
+            return {
+              serviceName: info.serviceName,
+              uniqueName: null,
+              pid: null,
+              processCmd: null,
+              isActive: false,
+              isActivatable,
+            } as ServiceInfo & { isActivatable?: boolean }
+          }
+
+          let pid: number | null = null
+          try {
+            const pidReply = await bus.call(new Message({
+              type: MessageType.METHOD_CALL,
+              destination: 'org.freedesktop.DBus',
+              path: '/org/freedesktop/DBus',
+              interface: 'org.freedesktop.DBus',
+              member: 'GetConnectionUnixProcessID',
+              signature: 's',
+              body: [info.uniqueName],
+            }))
+            if (pidReply.type === MessageType.METHOD_RETURN) {
+              pid = pidReply.body[0]
+            }
+          } catch {
+            // PID not available
+          }
+
+          let processCmd: string | null = null
+          if (pid) {
+            try {
+              const cmdline = readFileSync(`/proc/${pid}/cmdline`, 'utf-8')
+              processCmd = cmdline.split('\0').filter(Boolean).join(' ')
+            } catch {
+              // Process may have exited
+            }
+          }
+
+          return {
+            serviceName: info.serviceName,
+            uniqueName: info.uniqueName,
+            pid,
+            processCmd,
+            isActive: true,
+          } as ServiceInfo
+        }))
+
+        for (const info of withPid) {
+          result.set(info.serviceName, info)
+        }
+      }
+
+      return result
+    } finally {
+      bus.disconnect()
+    }
+  }
+
+  /**
    * Get detailed info about a service: unique name, PID, process command
    */
   async getServiceInfo(serviceName: string, busType: BusType): Promise<ServiceInfo> {

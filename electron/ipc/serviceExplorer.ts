@@ -59,4 +59,18 @@ export function registerServiceExplorerHandlers() {
       }
     }
   )
+
+  // Get all service info in batch (local only — single bus connection)
+  ipcMain.handle(
+    'dbus:getAllServiceInfo',
+    async (_event, busType: BusType) => {
+      try {
+        const map = await serviceExplorer.getAllServiceInfo(busType)
+        return Object.fromEntries(map)
+      } catch (error: any) {
+        console.error('Failed to get all service info:', error)
+        throw error
+      }
+    }
+  )
 }

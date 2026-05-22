@@ -69,42 +69,16 @@ export function Sidebar() {
     refetchOnWindowFocus: false,
   })
 
-  // Fetch service info (unique name, pid, process cmd) for all visible services
+  // Fetch service info (unique name, pid, process cmd) for all local services in batch
   const { data: localSessionServiceInfoMap = {} as Record<string, ServiceInfo> } = useQuery({
-    queryKey: ['serviceInfoMap', 'session', localSessionServices],
-    queryFn: async () => {
-      const results = await Promise.all(
-        localSessionServices.map(async (name) => {
-          try {
-            const info = await ipcClient.getServiceInfo(name, 'session')
-            return [name, info] as const
-          } catch {
-            return [name, { serviceName: name, uniqueName: null, pid: null, processCmd: null, isActive: false }] as const
-          }
-        }),
-      )
-      return Object.fromEntries(results) as Record<string, ServiceInfo>
-    },
-    enabled: localSessionServices.length > 0,
+    queryKey: ['allServiceInfo', 'session'],
+    queryFn: () => ipcClient.getAllServiceInfo('session'),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   })
   const { data: localSystemServiceInfoMap = {} as Record<string, ServiceInfo> } = useQuery({
-    queryKey: ['serviceInfoMap', 'system', localSystemServices],
-    queryFn: async () => {
-      const results = await Promise.all(
-        localSystemServices.map(async (name) => {
-          try {
-            const info = await ipcClient.getServiceInfo(name, 'system')
-            return [name, info] as const
-          } catch {
-            return [name, { serviceName: name, uniqueName: null, pid: null, processCmd: null, isActive: false }] as const
-          }
-        }),
-      )
-      return Object.fromEntries(results) as Record<string, ServiceInfo>
-    },
-    enabled: localSystemServices.length > 0,
+    queryKey: ['allServiceInfo', 'system'],
+    queryFn: () => ipcClient.getAllServiceInfo('system'),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   })

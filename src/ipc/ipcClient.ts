@@ -69,6 +69,15 @@ export const ipcClient = {
     }
   },
 
+  getAllServiceInfo: async (busType: BusType): Promise<Record<string, ServiceInfo>> => {
+    try {
+      return await window.electronAPI.getAllServiceInfo(busType)
+    } catch (error) {
+      console.error('Failed to get all service info:', error)
+      return {}
+    }
+  },
+
   // MethodInvoker
   invokeMethod: async (params: InvokeMethodParams): Promise<DbusMethodResult> => {
     try {

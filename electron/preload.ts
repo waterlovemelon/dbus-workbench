@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getServiceInfo: (serviceName: string, busType: 'session' | 'system', connectionId?: string) =>
     ipcRenderer.invoke('dbus:getServiceInfo', serviceName, busType, connectionId),
 
+  getAllServiceInfo: (busType: 'session' | 'system') =>
+    ipcRenderer.invoke('dbus:getAllServiceInfo', busType),
+
   // MethodInvoker
   invokeMethod: (params: {
     serviceName: string
