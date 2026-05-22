@@ -3,6 +3,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType, DbusMemberInfo } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useTranslation } from '../../i18n'
 
 interface SignalPaneProps {
   member: DbusMemberInfo
@@ -22,7 +23,8 @@ const SIGNAL_DESCRIPTIONS: Record<string, string> = {
 }
 
 export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
-  const desc = SIGNAL_DESCRIPTIONS[member.name] || 'D-Bus signal emitted by the service.'
+  const { t } = useTranslation()
+  const desc = SIGNAL_DESCRIPTIONS[member.name] || t('signal.defaultDesc')
 
   const monitorCmds = [
     { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "type='signal',interface='${member.interfaceName}',member='${member.name}'"` },
@@ -42,30 +44,30 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
           )}
           <h1 className="text-lg font-semibold">{member.name}</h1>
           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {busType === 'system' ? 'System Bus' : 'Session Bus'}
+            {busType === 'system' ? t('signal.systemBus') : t('signal.sessionBus')}
           </span>
           <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-            Signal
+            {t('signal.signal')}
           </span>
         </div>
 
         {/* Signal Information */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Signal Information</CardTitle>
+            <CardTitle className="text-sm">{t('signal.signalInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm">
-              <InfoRow label="Interface" value={member.interfaceName} mono />
-              <InfoRow label="Object Path" value={member.path} mono />
-              <InfoRow label="Description" value={desc} />
+              <InfoRow label={t('signal.interface')} value={member.interfaceName} mono />
+              <InfoRow label={t('signal.objectPath')} value={member.path} mono />
+              <InfoRow label={t('signal.description')} value={desc} />
             </div>
           </CardContent>
         </Card>
 
         {/* Monitoring Commands */}
         <MonitoringCommands
-          title="Monitor Signal"
+          title={t('signal.monitorSignal')}
           scope="signal-level"
           commands={monitorCmds}
         />

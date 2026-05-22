@@ -1,5 +1,6 @@
 import { Edit3, Trash2, ArrowRight, Check } from 'lucide-react'
 import type { RemoteConnection, ConnectionState } from '../../types/electron-api'
+import { useTranslation } from '../../i18n'
 
 interface ConnectionCardProps {
   connection: RemoteConnection
@@ -11,6 +12,7 @@ interface ConnectionCardProps {
 }
 
 export function ConnectionCard({ connection, state, onEdit, onDelete, onConnect, onDisconnect }: ConnectionCardProps) {
+  const { t } = useTranslation()
   const status = state?.status || 'disconnected'
   const isConnected = status === 'connected'
   const isConnecting = status === 'connecting'
@@ -35,14 +37,14 @@ export function ConnectionCard({ connection, state, onEdit, onDelete, onConnect,
             className="flex items-center gap-1 rounded px-1.5 py-1 text-sm text-text-2 hover:bg-surface-3 hover:text-text-0"
           >
             <Edit3 className="h-3 w-3" />
-            编辑
+            {t('remote.edit')}
           </button>
           <button
             onClick={() => onDelete(connection.id)}
             className="flex items-center gap-1 rounded px-1.5 py-1 text-sm text-text-2 hover:bg-error/10 hover:text-error"
           >
             <Trash2 className="h-3 w-3" />
-            删除
+            {t('remote.delete')}
           </button>
         </div>
       </div>
@@ -50,15 +52,15 @@ export function ConnectionCard({ connection, state, onEdit, onDelete, onConnect,
       {/* Details */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-sm">
-          <span className="min-w-[48px] shrink-0 text-text-2">地址</span>
+          <span className="min-w-[48px] shrink-0 text-text-2">{t('remote.address')}</span>
           <span className="font-mono text-text-1">{connection.host}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <span className="min-w-[48px] shrink-0 text-text-2">端口</span>
+          <span className="min-w-[48px] shrink-0 text-text-2">{t('remote.portLabel')}</span>
           <span className="font-mono text-text-1">{connection.port}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <span className="min-w-[48px] shrink-0 text-text-2">用户</span>
+          <span className="min-w-[48px] shrink-0 text-text-2">{t('remote.user')}</span>
           <span className="font-mono text-text-1">{connection.user}</span>
         </div>
       </div>
@@ -81,7 +83,7 @@ export function ConnectionCard({ connection, state, onEdit, onDelete, onConnect,
             className="flex items-center gap-1 rounded border border-success px-3 py-1 text-sm text-success hover:bg-success/10"
           >
             <Check className="h-3 w-3" />
-            已连接
+            {t('remote.connected')}
           </button>
         ) : (
           <button
@@ -90,7 +92,7 @@ export function ConnectionCard({ connection, state, onEdit, onDelete, onConnect,
             className="flex items-center gap-1 rounded bg-primary px-3 py-1 text-sm text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
             <ArrowRight className="h-3 w-3" />
-            {isConnecting ? '连接中...' : status === 'error' ? '重试' : '连接'}
+            {isConnecting ? t('remote.connecting') : status === 'error' ? t('remote.retry') : t('remote.connect')}
           </button>
         )}
       </div>

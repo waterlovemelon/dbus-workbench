@@ -13,6 +13,7 @@ import { ipcClient } from '../../ipc/ipcClient'
 import { buildServiceTree } from '../../lib/buildTree'
 import type { BusType, DbusMemberInfo, ServiceInfo } from '../../types/electron-api'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from '../../i18n'
 
 let statusListenerInitialized = false
 
@@ -30,6 +31,7 @@ interface RemoteSourceState {
 }
 
 export function Sidebar() {
+  const { t } = useTranslation()
   const {
     selectedServiceName,
     setSelectedService,
@@ -286,11 +288,11 @@ export function Sidebar() {
         <div className="py-0.5">
           {isLoadingServices ? (
             <div className="px-2 py-2 text-center text-sm text-text-2">
-              加载服务中...
+              {t('sidebar.loadingServices')}
             </div>
           ) : filtered.length === 0 ? (
             <div className="px-2 py-2 text-center text-sm text-text-2">
-              {services.length === 0 ? '无服务' : '无匹配服务'}
+              {services.length === 0 ? t('sidebar.noServices') : t('sidebar.noMatchingServices')}
             </div>
           ) : (
             filtered.map((service) => {
@@ -329,7 +331,7 @@ export function Sidebar() {
                               {info.processCmd && ` · ${info.processCmd}`}
                             </span>
                           ) : (
-                            <span className="text-[11px] text-text-3">inactive</span>
+                            <span className="text-[11px] text-text-3">{t('sidebar.inactive')}</span>
                           )}
                         </div>
                       )}
@@ -340,7 +342,7 @@ export function Sidebar() {
                     <div className="ml-1">
                       {isLoadingMembers ? (
                         <div className="px-2 py-1 text-sm text-text-2">
-                          加载成员中...
+                          {t('sidebar.loadingMembers')}
                         </div>
                       ) : treeNodes.length > 0 ? (
                         treeNodes.map((node, index) => (
@@ -356,7 +358,7 @@ export function Sidebar() {
                         ))
                       ) : (
                         <div className="px-2 py-1 text-sm text-text-2">
-                          无成员
+                          {t('sidebar.noMembers')}
                         </div>
                       )}
                     </div>
@@ -416,10 +418,10 @@ export function Sidebar() {
                 backgroundPosition: 'right 8px center',
               }}
             >
-              <optgroup label="本地">
-                <option value="local">本地 D-Bus</option>
+              <optgroup label={t('sidebar.local')}>
+                <option value="local">{t('sidebar.localDbus')}</option>
               </optgroup>
-              <optgroup label="远程连接">
+              <optgroup label={t('sidebar.remoteConnections')}>
                 {allConnections.map((conn) => (
                     <option key={conn.id} value={conn.id}>
                       {conn.name} ({conn.host})
@@ -442,7 +444,7 @@ export function Sidebar() {
         )}
         {/* Bus filter tabs */}
         <div className="mt-1.5 flex gap-0.5 rounded bg-surface-0 p-0.5">
-          {([['全部', 'all'], ['Session', 'session'], ['System', 'system']] as const).map(([label, value]) => (
+          {([[t('sidebar.all'), 'all'], ['Session', 'session'], ['System', 'system']] as const).map(([label, value]) => (
             <button
               key={value}
               onClick={() => setBusFilter(value)}
@@ -464,7 +466,7 @@ export function Sidebar() {
           <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-text-2" />
           <Input
             type="text"
-            placeholder="搜索服务..."
+            placeholder={t('sidebar.searchPlaceholder')}
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
             className="h-7 pl-7 text-sm"
@@ -531,13 +533,13 @@ export function Sidebar() {
             {connState?.status === 'connecting' ? (
               <>
                 <Wifi className="h-5 w-5 text-warning" />
-                <span className="text-sm text-text-2">连接中...</span>
+                <span className="text-sm text-text-2">{t('sidebar.connecting')}</span>
               </>
             ) : (
               <>
                 <WifiOff className="h-5 w-5 text-text-3" />
-                <span className="text-sm text-text-2">未连接</span>
-                <span className="text-sm text-text-3">通过远程连接菜单连接</span>
+                <span className="text-sm text-text-2">{t('sidebar.disconnected')}</span>
+                <span className="text-sm text-text-3">{t('sidebar.connectViaMenu')}</span>
               </>
             )}
           </div>
@@ -548,12 +550,12 @@ export function Sidebar() {
       <div className="border-t border-border px-2 py-1 text-sm text-text-2">
         {isConnected ? (
           <>
-            {currentServices.length} 服务
+            {currentServices.length} {t('sidebar.services')}
             {isLocal && connectedRemoteConnections.length > 0 &&
-              ` · ${connectedRemoteConnections.length} 个远程连接`}
+              ` · ${connectedRemoteConnections.length} ${t('sidebar.remoteConnectionsCount')}`}
           </>
         ) : (
-          <span>未连接</span>
+          <span>{t('sidebar.disconnected')}</span>
         )}
       </div>
     </div>

@@ -3,6 +3,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType, DbusMemberInfo } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useTranslation } from '../../i18n'
 
 interface InterfacePaneProps {
   interfaceName: string
@@ -21,6 +22,7 @@ export function InterfacePane({
   members = [],
   onBack,
 }: InterfacePaneProps) {
+  const { t } = useTranslation()
   const methods = members.filter((m) => m.type === 'method')
   const signals = members.filter((m) => m.type === 'signal')
   const properties = members.filter((m) => m.type === 'property')
@@ -46,24 +48,24 @@ export function InterfacePane({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Interface Information</CardTitle>
+            <CardTitle className="text-sm">{t('interface.interfaceInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-0">
-              <InfoItem label="Interface Name" value={interfaceName} mono />
-              <InfoItem label="Object Path" value={path} mono />
-              <InfoItem label="Owning Service" value={serviceName} mono />
-              <InfoItem label="Bus Type" value={busType} />
+              <InfoItem label={t('interface.interfaceName')} value={interfaceName} mono />
+              <InfoItem label={t('interface.objectPath')} value={path} mono />
+              <InfoItem label={t('interface.owningService')} value={serviceName} mono />
+              <InfoItem label={t('interface.busType')} value={busType} />
             </div>
             <div className="flex gap-4 border-t border-border bg-muted/30 px-4 py-2.5">
-              <StatChip icon={<Zap className="h-3 w-3 text-orange-500" />} count={methods.length} label="Methods" />
-              <StatChip icon={<Activity className="h-3 w-3 text-purple-500" />} count={signals.length} label="Signals" />
-              <StatChip icon={<Settings className="h-3 w-3 text-cyan-500" />} count={properties.length} label="Properties" />
+              <StatChip icon={<Zap className="h-3 w-3 text-orange-500" />} count={methods.length} label={t('interface.methods')} />
+              <StatChip icon={<Activity className="h-3 w-3 text-purple-500" />} count={signals.length} label={t('interface.signals')} />
+              <StatChip icon={<Settings className="h-3 w-3 text-cyan-500" />} count={properties.length} label={t('interface.properties')} />
             </div>
           </CardContent>
         </Card>
 
-        <MonitoringCommands title="Monitor Interface" scope="interface-level" commands={monitorCmds} />
+        <MonitoringCommands title={t('interface.monitorInterface')} scope="interface-level" commands={monitorCmds} />
       </div>
     </div>
   )

@@ -6,8 +6,10 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useSignalMonitor } from '../../hooks/useSignalMonitor'
+import { useTranslation } from '../../i18n'
 
 export function BottomPanel() {
+  const { t } = useTranslation()
   const { bottomPanelCollapsed, toggleBottomPanel } = useSettingsStore()
   const { events, clearEvents } = useSignalMonitor()
 
@@ -16,7 +18,7 @@ export function BottomPanel() {
       {/* Panel Header */}
       <div className="flex h-7 items-center justify-between bg-surface-1 border-b border-border px-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm text-text-2">Signal Monitor</span>
+          <span className="text-sm text-text-2">{t('bottomPanel.signalMonitor')}</span>
           {!bottomPanelCollapsed && events.length > 0 && (
             <span className="rounded bg-surface-2 px-1.5 py-0.5 text-sm text-text-2">
               {events.length}
@@ -29,7 +31,7 @@ export function BottomPanel() {
               onClick={clearEvents}
               className="h-5 px-1.5 rounded text-sm text-text-2 hover:bg-surface-2"
             >
-              Clear
+              {t('bottomPanel.clear')}
             </button>
           )}
           <button
@@ -50,7 +52,7 @@ export function BottomPanel() {
         <div className="flex-1 overflow-y-auto p-1.5 bg-background">
           {events.length === 0 ? (
             <div className="flex h-full items-center justify-center text-sm text-text-2">
-              No signal events received
+              {t('bottomPanel.noEvents')}
             </div>
           ) : (
             <div className="space-y-1">

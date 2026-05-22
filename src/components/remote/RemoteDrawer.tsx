@@ -4,6 +4,7 @@ import { useConnectionStore } from '../../stores/connectionStore'
 import { ConnectionCard } from './ConnectionCard'
 import { ConnectionDialog } from './ConnectionDialog'
 import type { RemoteConnection } from '../../types/electron-api'
+import { useTranslation } from '../../i18n'
 
 interface RemoteDrawerProps {
   open: boolean
@@ -11,6 +12,7 @@ interface RemoteDrawerProps {
 }
 
 export function RemoteDrawer({ open, onClose }: RemoteDrawerProps) {
+  const { t } = useTranslation()
   const {
     connections,
     connectionStates,
@@ -60,7 +62,7 @@ export function RemoteDrawer({ open, onClose }: RemoteDrawerProps) {
         <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-text-0">
             <Zap className="h-4 w-4 text-success" />
-            远程连接
+            {t('remote.title')}
           </h2>
           <button onClick={onClose} className="rounded p-1 text-text-2 hover:bg-surface-2 hover:text-text-0">
             <X className="h-4 w-4" />
@@ -88,7 +90,7 @@ export function RemoteDrawer({ open, onClose }: RemoteDrawerProps) {
               className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border px-2.5 py-2.5 text-sm text-text-2 transition-all hover:border-success hover:text-success hover:bg-success/5"
             >
               <Plus className="h-3.5 w-3.5" />
-              新增远程连接
+              {t('remote.addNew')}
             </button>
           </div>
         </div>

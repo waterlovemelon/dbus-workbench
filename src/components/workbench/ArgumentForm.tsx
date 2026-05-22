@@ -3,6 +3,7 @@ import { AlertCircle } from 'lucide-react'
 import type { DbusArgumentInfo } from '../../types/electron-api'
 import { parseDbusSignature } from '../../lib/dbusSignature'
 import { formatDbusTypeLabel } from '../../lib/memberLabel'
+import { useTranslation } from '../../i18n'
 
 interface ArgumentFormProps {
   args: DbusArgumentInfo[]
@@ -12,6 +13,7 @@ interface ArgumentFormProps {
 }
 
 export function ArgumentForm({ args, values, onChange, disabled }: ArgumentFormProps) {
+  const { t } = useTranslation()
   const parsedArgs = useMemo(
     () =>
       args.map((arg) => ({
@@ -71,7 +73,7 @@ export function ArgumentForm({ args, values, onChange, disabled }: ArgumentFormP
   if (parsedArgs.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-surface-0 px-4 py-4 text-sm italic text-text-2">
-        No arguments required
+        {t('argument.noArgs')}
       </div>
     )
   }
@@ -90,7 +92,7 @@ export function ArgumentForm({ args, values, onChange, disabled }: ArgumentFormP
           <div className="flex items-start gap-4">
             <div className="w-40 flex-shrink-0">
               <div className="font-mono text-sm font-medium text-info">
-                {arg.name || `Argument ${index + 1}`}
+                {arg.name || `${t('argument.argumentN')} ${index + 1}`}
               </div>
               <div className="mt-1 font-mono text-sm text-text-2">
                 {formatDbusTypeLabel(arg.rawType)}
@@ -111,7 +113,7 @@ export function ArgumentForm({ args, values, onChange, disabled }: ArgumentFormP
                     rows={3}
                   />
                   <div className="mt-2 text-sm text-text-2">
-                    Enter as JSON (e.g., {getExampleForType(arg.type)})
+                    {t('argument.enterAsJson')} {getExampleForType(arg.type)})
                   </div>
                 </div>
               ) : (

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useTranslation } from '../../i18n'
 
 export interface MonitorCommand {
   tool: 'dbus-monitor' | 'busctl' | 'gdbus'
@@ -15,6 +16,7 @@ interface MonitoringCommandsProps {
 }
 
 export function MonitoringCommands({ title, scope, commands }: MonitoringCommandsProps) {
+  const { t } = useTranslation()
   const [activeTool, setActiveTool] = useState<string>(commands[0]?.tool ?? 'dbus-monitor')
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [copiedAll, setCopiedAll] = useState(false)
@@ -63,7 +65,7 @@ export function MonitoringCommands({ title, scope, commands }: MonitoringCommand
           </div>
           <Button variant="outline" size="sm" className="h-6 text-[11px]" onClick={handleCopyAll}>
             {copiedAll ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            <span className="ml-1">Copy All</span>
+            <span className="ml-1">{t('monitor.copyAll')}</span>
           </Button>
         </div>
       </CardHeader>
@@ -74,7 +76,7 @@ export function MonitoringCommands({ title, scope, commands }: MonitoringCommand
             <button
               onClick={() => handleCopy(activeCommand.command, -1)}
               className="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-background hover:text-foreground group-hover:opacity-100"
-              title="Copy"
+              title={t('monitor.copy')}
             >
               {copiedIndex === -1 ? (
                 <Check className="h-3.5 w-3.5 text-green-500" />

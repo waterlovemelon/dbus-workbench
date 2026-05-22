@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DbusMethodResult } from '../../types/electron-api'
 import { Check, CheckCircle2, Copy, Loader2, XCircle } from 'lucide-react'
+import { useTranslation } from '../../i18n'
 
 interface ResultViewProps {
   result: DbusMethodResult | null
@@ -8,6 +9,7 @@ interface ResultViewProps {
 }
 
 export function ResultView({ result, isInvoking }: ResultViewProps) {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
   const resetCopiedTimerRef = useRef<number | null>(null)
 
@@ -42,14 +44,14 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
           <div className="flex items-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-info" />
             <h3 className="text-sm font-semibold uppercase tracking-wider text-text-1">
-              Invoking Method...
+              {t('result.invokingMethod')}
             </h3>
           </div>
         </div>
         <div className="px-5 py-8 text-center">
           <div className="inline-flex items-center gap-3 rounded-lg bg-surface-1 px-4 py-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-info" />
-            <span className="font-mono text-sm text-text-2">Waiting for D-Bus response...</span>
+            <span className="font-mono text-sm text-text-2">{t('result.waitingForResponse')}</span>
           </div>
         </div>
       </div>
@@ -60,10 +62,10 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
     return (
       <div className="overflow-hidden rounded-lg border border-border bg-surface-0">
         <div className="border-b border-border px-5 py-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-text-1">Result</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-text-1">{t('result.title')}</h3>
         </div>
         <div className="px-5 py-8 text-center text-sm text-text-2">
-          No result yet. Click "Invoke Method" to execute.
+          {t('result.noResult')}
         </div>
       </div>
     )
@@ -75,7 +77,7 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
         <div className="border-b border-error/30 px-5 py-4">
           <div className="flex items-center gap-3">
             <XCircle className="h-5 w-5 text-error" />
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-error">Error</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-error">{t('result.error')}</h3>
           </div>
         </div>
         <div className="px-5 py-5">
@@ -89,7 +91,7 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
                 sel?.addRange(range)
               }}
             >
-              {result.error || 'Unknown error'}
+              {result.error || t('result.unknownError')}
             </pre>
           </div>
         </div>
@@ -103,7 +105,7 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="h-5 w-5 text-success" />
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-success">Success</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-success">{t('result.success')}</h3>
           </div>
           <button
             onClick={handleCopy}
@@ -112,12 +114,12 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
             {copied ? (
               <>
                 <Check className="h-3.5 w-3.5" />
-                <span>Copied!</span>
+                <span>{t('result.copied')}</span>
               </>
             ) : (
               <>
                 <Copy className="h-3.5 w-3.5" />
-                <span>Copy</span>
+                <span>{t('result.copy')}</span>
               </>
             )}
           </button>
@@ -142,7 +144,7 @@ export function ResultView({ result, isInvoking }: ResultViewProps) {
 
         {typeof result.value !== 'undefined' && (
           <div className="mt-3 font-mono text-sm text-text-2">
-            Value type:{' '}
+            {t('result.valueType')}{' '}
             <span className="text-info">{Array.isArray(result.value) ? 'array' : typeof result.value}</span>
           </div>
         )}

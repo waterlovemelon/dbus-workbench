@@ -6,6 +6,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType, ServiceInfo } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useTranslation } from '../../i18n'
 
 interface ServiceOverviewPaneProps {
   serviceName: string
@@ -20,6 +21,7 @@ export function ServiceOverviewPane({
   connectionId,
   onBack,
 }: ServiceOverviewPaneProps) {
+  const { t } = useTranslation()
   const [copiedCmd, setCopiedCmd] = useState(false)
 
   const { data: info, isLoading } = useQuery<ServiceInfo>({
@@ -67,15 +69,15 @@ export function ServiceOverviewPane({
           )}
           <h1 className="text-lg font-semibold">{serviceName}</h1>
           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {busType === 'system' ? 'System Bus' : 'Session Bus'}
+            {busType === 'system' ? t('service.systemBus') : t('service.sessionBus')}
           </span>
           {isActive ? (
             <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              Active
+              {t('service.active')}
             </span>
           ) : (
             <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-              Inactive
+              {t('service.inactive')}
             </span>
           )}
         </div>
@@ -83,18 +85,18 @@ export function ServiceOverviewPane({
         {/* Service Information */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Service Information</CardTitle>
+            <CardTitle className="text-sm">{t('service.serviceInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="py-4 text-center text-sm text-muted-foreground">Loading...</div>
+              <div className="py-4 text-center text-sm text-muted-foreground">{t('service.loading')}</div>
             ) : (
               <div className="grid grid-cols-2 gap-0">
-                <InfoItem label="Service Name" value={serviceName} />
-                <InfoItem label="Unique Name" value={uniqueName} mono />
-                <InfoItem label="Owning Process" value={isActive ? `${processName} (PID ${pid ?? '?'})` : 'Not running'} />
-                <InfoItem label="Bus Type" value={busType} />
-                <InfoItem label="Start Time" value={info?.startTime ? new Date(info.startTime).toLocaleString() : '-'} />
+                <InfoItem label={t('service.serviceName')} value={serviceName} />
+                <InfoItem label={t('service.uniqueName')} value={uniqueName} mono />
+                <InfoItem label={t('service.owningProcess')} value={isActive ? `${processName} (PID ${pid ?? '?'})` : t('service.notRunning')} />
+                <InfoItem label={t('service.busType')} value={busType} />
+                <InfoItem label={t('service.startTime')} value={info?.startTime ? new Date(info.startTime).toLocaleString() : '-'} />
               </div>
             )}
 
@@ -102,14 +104,14 @@ export function ServiceOverviewPane({
             {isActive && processCmd && (
               <div className="mt-3 border-t border-border pt-3">
                 <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Startup Command
+                  {t('service.startupCommand')}
                 </div>
                 <div className="group flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2 font-mono text-xs hover:bg-muted">
                   <span className="flex-1 break-all">{processCmd}</span>
                   <button
                     onClick={handleCopyCmd}
                     className="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-background hover:text-foreground group-hover:opacity-100"
-                    title="Copy"
+                    title={t('monitor.copy')}
                   >
                     {copiedCmd ? (
                       <Check className="h-3.5 w-3.5 text-green-500" />
@@ -125,14 +127,14 @@ export function ServiceOverviewPane({
 
         {/* Monitoring Commands */}
         <MonitoringCommands
-          title="Monitor Service"
+          title={t('service.monitorService')}
           scope="service-level"
           commands={serviceMonitorCmds}
         />
 
         {processMonitorCmds.length > 0 && (
           <MonitoringCommands
-            title="Monitor Process"
+            title={t('service.monitorProcess')}
             scope="process-level"
             commands={processMonitorCmds}
           />

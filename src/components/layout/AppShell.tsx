@@ -16,8 +16,10 @@ import { InterfacePane } from '../service/InterfacePane'
 import { RemoteDrawer } from '../remote/RemoteDrawer'
 import { useAppStore } from '../../stores/appStore'
 import { useSettingsStore } from '../../stores/settingsStore'
+import { useTranslation } from '../../i18n'
 
 export function AppShell() {
+  const { t } = useTranslation()
   const {
     selectedNode,
     selectedServiceName,
@@ -114,7 +116,7 @@ export function AppShell() {
       <div className="flex h-full items-center justify-center bg-muted/30">
         <div className="text-center">
           <h2 className="text-xl font-bold">D-Bus Workbench</h2>
-          <p className="mt-2 text-muted-foreground">Select a service to explore</p>
+          <p className="mt-2 text-muted-foreground">{t('appshell.selectService')}</p>
         </div>
       </div>
     )
@@ -129,7 +131,7 @@ export function AppShell() {
       <div className="flex flex-1 overflow-hidden">
         <PanelGroup direction="horizontal">
           {/* Sidebar */}
-          <Panel defaultSize={40} minSize={20} maxSize={55}>
+          <Panel defaultSize={50} minSize={20} maxSize={55}>
             <Sidebar />
           </Panel>
 
@@ -137,7 +139,7 @@ export function AppShell() {
           <PanelResizeHandle className="w-1 bg-border hover:bg-primary/50 transition-colors" />
 
           {/* Main Content Area */}
-          <Panel defaultSize={60} minSize={30}>
+          <Panel defaultSize={50} minSize={30}>
             {renderContent()}
           </Panel>
         </PanelGroup>

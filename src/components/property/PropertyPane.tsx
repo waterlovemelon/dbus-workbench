@@ -11,6 +11,7 @@ import {
   ArrowUpFromLine,
   XCircle,
 } from 'lucide-react'
+import { useTranslation } from '../../i18n'
 
 interface PropertyPaneProps {
   member: DbusMemberInfo
@@ -20,6 +21,7 @@ interface PropertyPaneProps {
 }
 
 export function PropertyPane({ member, busType, connectionId, onBack }: PropertyPaneProps) {
+  const { t } = useTranslation()
   const { getProperty, setProperty, value, isLoading, error } =
     usePropertyAccessor()
   const [setValue, setSetValue] = useState('')
@@ -180,7 +182,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                 ) : (
                   <ArrowDownToLine className="w-4 h-4" />
                 )}
-                Get
+                {t('property.get')}
               </button>
               <button
                 onClick={() => handleCopyCommand('Get')}
@@ -191,7 +193,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                Copy Get
+                {t('property.copyGet')}
               </button>
             </div>
 
@@ -218,7 +220,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                     </pre>
                     {typeof value.value !== 'undefined' && (
                       <div className="mt-2 font-mono text-sm text-text-2">
-                        Value type:{' '}
+                        {t('property.valueType')}{' '}
                         <span className="text-success">
                           {Array.isArray(value.value)
                             ? 'array'
@@ -240,7 +242,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                         sel?.addRange(range)
                       }}
                     >
-                      {value.error || 'Unknown error'}
+                      {value.error || t('property.unknownError')}
                     </pre>
                   </div>
                 )}
@@ -254,13 +256,13 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
           <section>
             <div className="mb-3">
               <label className="block text-sm text-text-2 uppercase tracking-wider mb-2">
-                New Value
+                {t('property.newValue')}
               </label>
               <input
                 type="text"
                 value={setValue}
                 onChange={(e) => setSetValue(e.target.value)}
-                placeholder={`Enter value (${typeLabel})`}
+                placeholder={`${t('property.enterValue')} (${typeLabel})`}
                 disabled={isLoading}
                 className="w-full rounded-md border border-border bg-surface-0 px-3 py-2 font-mono text-sm text-text-0 placeholder:text-text-3 focus:border-success focus:outline-none focus:ring-1 focus:ring-success/30 disabled:opacity-50"
               />
@@ -276,7 +278,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                 ) : (
                   <ArrowUpFromLine className="w-4 h-4" />
                 )}
-                Set
+                {t('property.set')}
               </button>
               <button
                 onClick={() => handleCopyCommand('Set')}
@@ -288,7 +290,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                Copy Set
+                {t('property.copySet')}
               </button>
             </div>
 
@@ -346,7 +348,7 @@ export function PropertyPane({ member, busType, connectionId, onBack }: Property
         {/* Access info notice */}
         {!canRead && !canWrite && (
           <div className="rounded-lg border border-border bg-surface-0 px-4 py-6 text-center text-sm text-text-2">
-            Property access mode &quot;{access}&quot; is not recognized.
+            {t('property.accessNotRecognized', { access })}
           </div>
         )}
       </div>

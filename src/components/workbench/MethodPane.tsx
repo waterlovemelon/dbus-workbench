@@ -5,6 +5,7 @@ import { ArgumentForm } from './ArgumentForm'
 import { ResultView } from './ResultView'
 import { useMethodInvoker } from '../../hooks/useMethodInvoker'
 import { ChevronLeft, Play, RotateCcw, Copy, Check } from 'lucide-react'
+import { useTranslation } from '../../i18n'
 
 interface MethodPaneProps {
   member: DbusMemberInfo
@@ -13,9 +14,9 @@ interface MethodPaneProps {
   onBack: () => void
 }
 
-function renderArgumentSummary(args: DbusArgumentInfo[]): string {
+function renderArgumentSummary(args: DbusArgumentInfo[], noneText: string): string {
   if (args.length === 0) {
-    return 'None'
+    return noneText
   }
   return args
     .map((arg) => {
@@ -26,6 +27,7 @@ function renderArgumentSummary(args: DbusArgumentInfo[]): string {
 }
 
 export function MethodPane({ member, busType, connectionId, onBack }: MethodPaneProps) {
+  const { t } = useTranslation()
   const [args, setArgs] = useState<any[]>([])
   const { invoke, result, isInvoking, clearResult } = useMethodInvoker()
   const [copied, setCopied] = useState(false)
@@ -97,18 +99,18 @@ export function MethodPane({ member, busType, connectionId, onBack }: MethodPane
         <div className="mt-4 flex gap-6">
           <div className="flex-1 bg-surface-0 rounded-lg px-4 py-3 border border-border">
             <div className="text-sm text-text-2 uppercase tracking-wider mb-1">
-              Input Parameters
+              {t('method.inputParams')}
             </div>
             <div className="font-mono text-sm text-text-0">
-              {renderArgumentSummary(member.inputArgs)}
+              {renderArgumentSummary(member.inputArgs, t('method.none'))}
             </div>
           </div>
           <div className="flex-1 bg-surface-0 rounded-lg px-4 py-3 border border-border">
             <div className="text-sm text-text-2 uppercase tracking-wider mb-1">
-              Output Parameters
+              {t('method.outputParams')}
             </div>
             <div className="font-mono text-sm text-text-0">
-              {renderArgumentSummary(member.outputArgs)}
+              {renderArgumentSummary(member.outputArgs, t('method.none'))}
             </div>
           </div>
         </div>
@@ -120,7 +122,7 @@ export function MethodPane({ member, busType, connectionId, onBack }: MethodPane
         {member.inputArgs.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-text-1 uppercase tracking-wider mb-4">
-              Arguments
+              {t('method.arguments')}
             </h3>
             <ArgumentForm
               args={member.inputArgs}
@@ -139,7 +141,7 @@ export function MethodPane({ member, busType, connectionId, onBack }: MethodPane
             className="flex items-center gap-2 px-4 py-2 bg-success text-success-foreground font-medium rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
           >
             <Play className="w-4 h-4" />
-            {isInvoking ? 'Invoking...' : 'Invoke'}
+            {isInvoking ? t('method.invoking') : t('method.invoke')}
           </button>
           <button
             onClick={handleReset}
@@ -147,14 +149,14 @@ export function MethodPane({ member, busType, connectionId, onBack }: MethodPane
             className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-1 rounded hover:bg-surface-3 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-border text-sm"
           >
             <RotateCcw className="w-4 h-4" />
-            Reset
+            {t('method.reset')}
           </button>
           <button
             onClick={handleCopyCommand}
             className="flex items-center gap-2 px-4 py-2 bg-surface-2 text-text-2 rounded hover:bg-surface-3 hover:text-text-0 transition-colors border border-border text-sm"
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            Copy Command
+            {t('method.copyCommand')}
           </button>
         </div>
 

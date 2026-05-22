@@ -3,6 +3,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { useTranslation } from '../../i18n'
 
 interface PathPaneProps {
   path: string
@@ -12,6 +13,7 @@ interface PathPaneProps {
 }
 
 export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) {
+  const { t } = useTranslation()
   const monitorCmds = [
     { tool: 'dbus-monitor' as const, command: `dbus-monitor "destination='${serviceName}',path='${path}'"` },
     { tool: 'busctl' as const, command: `busctl monitor ${serviceName} ${path}` },
@@ -33,18 +35,18 @@ export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) 
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Path Information</CardTitle>
+            <CardTitle className="text-sm">{t('path.pathInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-0">
-              <InfoItem label="Object Path" value={path} mono />
-              <InfoItem label="Owning Service" value={serviceName} mono />
-              <InfoItem label="Bus Type" value={busType} />
+              <InfoItem label={t('path.objectPath')} value={path} mono />
+              <InfoItem label={t('path.owningService')} value={serviceName} mono />
+              <InfoItem label={t('path.busType')} value={busType} />
             </div>
           </CardContent>
         </Card>
 
-        <MonitoringCommands title="Monitor Path" scope="path-level" commands={monitorCmds} />
+        <MonitoringCommands title={t('path.monitorPath')} scope="path-level" commands={monitorCmds} />
       </div>
     </div>
   )

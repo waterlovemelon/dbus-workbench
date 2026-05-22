@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { useSettingsStore } from '../../stores/settingsStore'
+import { useTranslation } from '../../i18n'
 
 interface TopBarProps {
   onOpenRemoteDrawer?: () => void
@@ -15,6 +16,7 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const { theme, setTheme } = useSettingsStore()
+  const { t, locale, setLocale } = useTranslation()
 
   useEffect(() => {
     if (!menuOpen) return
@@ -28,10 +30,11 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
   }, [menuOpen])
 
   const menuItems = [
-    { label: '设置', action: () => {} },
-    { label: '远程连接', action: () => onOpenRemoteDrawer?.() },
-    { label: theme === 'dark' ? '切换亮色主题' : '切换暗色主题', action: () => setTheme(theme === 'dark' ? 'light' : 'dark') },
-    { label: '关于', action: () => {} },
+    { label: t('topbar.settings'), action: () => {} },
+    { label: t('topbar.remoteConnection'), action: () => onOpenRemoteDrawer?.() },
+    { label: theme === 'dark' ? t('topbar.switchToLight') : t('topbar.switchToDark'), action: () => setTheme(theme === 'dark' ? 'light' : 'dark') },
+    { label: locale === 'zh' ? 'English' : '中文', action: () => setLocale(locale === 'zh' ? 'en' : 'zh') },
+    { label: t('topbar.about'), action: () => {} },
   ]
 
   return (
