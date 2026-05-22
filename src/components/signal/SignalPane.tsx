@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { ArrowLeft, Bell, BellOff, Copy, Check } from 'lucide-react'
+import { ArrowLeft, Bell, BellOff } from 'lucide-react'
 import { MonitoringCommands } from '../common/MonitoringCommands'
 import { useSignalMonitor } from '../../hooks/useSignalMonitor'
 import type { BusType, DbusMemberInfo } from '../../types/electron-api'
@@ -25,7 +24,6 @@ const SIGNAL_DESCRIPTIONS: Record<string, string> = {
 
 export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
   const { subscribe, unsubscribe, isSubscribed } = useSignalMonitor()
-  const [copied, setCopied] = useState(false)
 
   const subscribed = isSubscribed({
     serviceName: member.serviceName,
@@ -52,19 +50,11 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
 
   const desc = SIGNAL_DESCRIPTIONS[member.name] || 'D-Bus signal emitted by the service.'
 
-  const dbusMonitorCmd = `dbus-monitor --${busType} "type='signal',interface='${member.interfaceName}',member='${member.name}'"`
-
   const monitorCmds = [
-    { tool: 'dbus-monitor' as const, command: dbusMonitorCmd },
+    { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "type='signal',interface='${member.interfaceName}',member='${member.name}'"` },
     { tool: 'busctl' as const, command: `busctl monitor ${member.serviceName} ${member.path} ${member.interfaceName}.${member.name}` },
     { tool: 'gdbus' as const, command: `gdbus monitor --${busType} --dest ${member.serviceName}` },
   ]
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(dbusMonitorCmd)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
 
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-muted/30 p-6">
@@ -136,22 +126,6 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
           scope="signal-level"
           commands={monitorCmds}
         />
-
-        {/* dbus-monitor filter preview */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm">dbus-monitor filter</CardTitle>
-            <Button variant="outline" size="sm" className="h-6 text-[11px]" onClick={handleCopy}>
-              {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-              <span className="ml-1">Copy</span>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <pre className="overflow-x-auto rounded-md bg-[#0d1117] p-3 font-mono text-xs text-[#c9d1d9]">
-              {dbusMonitorCmd}
-            </pre>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
