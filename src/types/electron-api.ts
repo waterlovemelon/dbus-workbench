@@ -74,6 +74,10 @@ export interface ElectronAPI {
   isMaximized: () => boolean
 
   listServices: (busType: BusType, connectionId?: string) => Promise<string[]>
+  startBusWatcher: (busType: BusType) => Promise<void>
+  onBusNameOwnerChanged: (callback: (event: BusNameChangedEvent) => void) => void
+  removeBusNameOwnerChangedListener: () => void
+  activateService: (serviceName: string, busType: BusType, connectionId?: string) => Promise<void>
   introspectServiceMembers: (serviceName: string, busType: BusType, connectionId?: string) => Promise<DbusMemberInfo[]>
   getServiceInfo: (serviceName: string, busType: BusType, connectionId?: string) => Promise<ServiceInfo>
   getAllServiceInfo: (busType: BusType) => Promise<Record<string, ServiceInfo>>
@@ -141,6 +145,7 @@ export interface ServiceInfo {
   processCmd: string | null
   startTime: string | null
   isActive: boolean
+  isActivatable?: boolean
 }
 
 export interface SignalEvent {
@@ -150,4 +155,11 @@ export interface SignalEvent {
   interfaceName: string
   signalName: string
   args: any[]
+}
+
+export interface BusNameChangedEvent {
+  busType: BusType
+  name: string
+  oldOwner: string
+  newOwner: string
 }

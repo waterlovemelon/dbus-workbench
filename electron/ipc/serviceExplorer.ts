@@ -28,6 +28,19 @@ export function registerServiceExplorerHandlers() {
     }
   })
 
+  ipcMain.handle('dbus:activateService', async (_event, serviceName: string, busType: BusType, connectionId?: string) => {
+    try {
+      if (connectionId) {
+        await getRemoteExplorer().activateService(connectionId, serviceName, busType)
+        return
+      }
+      await serviceExplorer.activateService(serviceName, busType)
+    } catch (error: any) {
+      console.error('Failed to activate service:', error)
+      throw error
+    }
+  })
+
   // Introspect service members (supports remote via connectionId)
   ipcMain.handle(
     'dbus:introspectServiceMembers',

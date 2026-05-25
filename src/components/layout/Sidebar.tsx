@@ -33,7 +33,10 @@ interface RemoteSourceState {
 export function Sidebar() {
   const { t } = useTranslation()
   const {
+    activeBus,
+    activeConnectionId,
     selectedServiceName,
+    clearSelectedService,
     setSelectedService,
     selectedMemberId,
     setSelectedMember,
@@ -58,13 +61,13 @@ export function Sidebar() {
   }, [])
 
   // Local services - fetch both session and system
-  const { data: localSessionServices = [], isLoading: isLoadingLocalSession } = useQuery({
+  const { data: localSessionServices = [], isLoading: isLoadingLocalSession, refetch: refetchLocalSessionServices } = useQuery({
     queryKey: ['services', 'session'],
     queryFn: () => ipcClient.listServices('session'),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   })
-  const { data: localSystemServices = [], isLoading: isLoadingLocalSystem } = useQuery({
+  const { data: localSystemServices = [], isLoading: isLoadingLocalSystem, refetch: refetchLocalSystemServices } = useQuery({
     queryKey: ['services', 'system'],
     queryFn: () => ipcClient.listServices('system'),
     staleTime: 30000,
@@ -72,19 +75,21 @@ export function Sidebar() {
   })
 
   // Fetch service info (unique name, pid, process cmd) for all local services in batch
-  const { data: localSessionServiceInfoMap = {} as Record<string, ServiceInfo> } = useQuery({
+  const { data: localSessionServiceInfoMap = {} as Record<string, ServiceInfo>, refetch: refetchLocalSessionServiceInfo } = useQuery({
     queryKey: ['allServiceInfo', 'session'],
     queryFn: () => ipcClient.getAllServiceInfo('session'),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   })
-  const { data: localSystemServiceInfoMap = {} as Record<string, ServiceInfo> } = useQuery({
+  const { data: localSystemServiceInfoMap = {} as Record<string, ServiceInfo>, refetch: refetchLocalSystemServiceInfo } = useQuery({
     queryKey: ['allServiceInfo', 'system'],
     queryFn: () => ipcClient.getAllServiceInfo('system'),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   })
   const localServiceInfoMaps = { session: localSessionServiceInfoMap, system: localSystemServiceInfoMap }
+  const localServiceQueries = { session: refetchLocalSessionServices, system: refetchLocalSystemServices }
+  const localServiceInfoQueries = { session: refetchLocalSessionServiceInfo, system: refetchLocalSystemServiceInfo }
   const getServiceInfoLocal = (serviceName: string, busType: BusType) =>
     localServiceInfoMaps[busType]?.[serviceName] ?? null
 
@@ -97,6 +102,55 @@ export function Sidebar() {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   })
+
+  useEffect(() => {
+    ipcClient.startBusWatcher('session').catch((error) => {
+      console.error('Failed to start session bus watcher:', error)
+    })
+    ipcClient.startBusWatcher('system').catch((error) => {
+      console.error('Failed to start system bus watcher:', error)
+    })
+
+    const refreshLocalBus = async (busType: BusType) => {
+      await Promise.all([
+        localServiceQueries[busType](),
+        localServiceInfoQueries[busType](),
+      ])
+    }
+
+    ipcClient.onBusNameOwnerChanged((event) => {
+      const serviceExited = event.oldOwner && !event.newOwner
+
+      if (
+        serviceExited &&
+        activeConnectionId == null &&
+        activeBus === event.busType &&
+        selectedServiceName === event.name
+      ) {
+        clearSelectedService()
+
+        if (localExpandedBusType === event.busType && localExpandedService === event.name) {
+          setLocalExpandedService(null)
+          setLocalExpandedBusType(null)
+        }
+      }
+
+      refreshLocalBus(event.busType).catch((error) => {
+        console.error(`Failed to refresh ${event.busType} bus after NameOwnerChanged:`, error)
+      })
+    })
+
+    return () => {
+      ipcClient.removeBusNameOwnerChangedListener()
+    }
+  }, [
+    activeBus,
+    activeConnectionId,
+    clearSelectedService,
+    localExpandedBusType,
+    localExpandedService,
+    selectedServiceName,
+  ])
 
   // Fetch remote services (both session and system) when connections become connected
   const fetchRemoteServices = useCallback(async (connId: string) => {
@@ -156,7 +210,7 @@ export function Sidebar() {
             const info = await ipcClient.getServiceInfo(name, busType, connId)
             return [name, info] as const
           } catch {
-            return [name, { serviceName: name, uniqueName: null, pid: null, processCmd: null, isActive: false }] as const
+            return [name, { serviceName: name, uniqueName: null, pid: null, processCmd: null, startTime: null, isActive: false }] as const
           }
         }),
       )
@@ -213,7 +267,13 @@ export function Sidebar() {
   }
 
   // Handle toggle service (local)
-  const handleToggleLocalService = (serviceName: string, busType: BusType) => {
+  const handleToggleLocalService = async (serviceName: string, busType: BusType) => {
+    try {
+      await ipcClient.activateService(serviceName, busType)
+    } catch {
+      // Ignore activation failures and continue opening the service.
+    }
+
     if (localExpandedService === serviceName && localExpandedBusType === busType) {
       setLocalExpandedService(null)
       setLocalExpandedBusType(null)
@@ -227,7 +287,13 @@ export function Sidebar() {
   }
 
   // Handle toggle service (remote)
-  const handleToggleRemoteService = (connId: string, serviceName: string, busType: BusType) => {
+  const handleToggleRemoteService = async (connId: string, serviceName: string, busType: BusType) => {
+    try {
+      await ipcClient.activateService(serviceName, busType, connId)
+    } catch {
+      // Ignore activation failures and continue opening the service.
+    }
+
     const current = remoteStates[connId]
     if (current?.expandedService === serviceName && current?.expandedBusType === busType) {
       setRemoteStates((prev) => ({

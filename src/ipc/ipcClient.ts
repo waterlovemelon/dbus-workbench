@@ -4,6 +4,7 @@
  */
 
 import type {
+  BusNameChangedEvent,
   BusType,
   ConnectionState,
   DbusMemberInfo,
@@ -47,6 +48,27 @@ export const ipcClient = {
     } catch (error) {
       console.error('Failed to list services:', error)
       throw new Error(`Failed to list D-Bus services: ${error instanceof Error ? error.message : String(error)}`)
+    }
+  },
+
+  startBusWatcher: async (busType: BusType): Promise<void> => {
+    await window.electronAPI.startBusWatcher(busType)
+  },
+
+  onBusNameOwnerChanged: (callback: (event: BusNameChangedEvent) => void): void => {
+    window.electronAPI.onBusNameOwnerChanged(callback)
+  },
+
+  removeBusNameOwnerChangedListener: (): void => {
+    window.electronAPI.removeBusNameOwnerChangedListener()
+  },
+
+  activateService: async (serviceName: string, busType: BusType, connectionId?: string): Promise<void> => {
+    try {
+      await window.electronAPI.activateService(serviceName, busType, connectionId)
+    } catch (error) {
+      console.error('Failed to activate service:', error)
+      throw new Error(`Failed to activate service ${serviceName}: ${error instanceof Error ? error.message : String(error)}`)
     }
   },
 

@@ -4,20 +4,54 @@ import type { DbusMemberInfo, DbusArgumentInfo, ServiceInfo } from './types'
 export class RemoteDBusExplorer {
   constructor(private tunnelManager: TunnelManager) {}
 
-  async listServices(connectionId: string, busType: 'session' | 'system'): Promise<string[]> {
-    const busFlag = busType === 'system' ? '--system' : '--session'
-    const cmd = `gdbus call ${busFlag} --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ListNames`
-    const output = await this.tunnelManager.runCommand(connectionId, cmd)
-
+  private parseGdbusStringArray(output: string): string[] {
     const match = output.match(/\[(.*)\]/s)
     if (!match) return []
 
-    const names = match[1].split(',').map(s => s.trim().replace(/^'|'$/g, '').replace(/^"|"$/g, ''))
-    return names.filter(n => n && !n.startsWith(':')).sort()
+    return match[1]
+      .split(',')
+      .map(s => s.trim().replace(/^'|'$/g, '').replace(/^"|"$/g, ''))
+      .filter(Boolean)
+  }
+
+  async listServices(connectionId: string, busType: 'session' | 'system'): Promise<string[]> {
+    const busFlag = busType === 'system' ? '--system' : '--session'
+    const names = new Set<string>()
+
+    const namesCmd = `gdbus call ${busFlag} --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ListNames`
+    const namesOutput = await this.tunnelManager.runCommand(connectionId, namesCmd)
+    for (const name of this.parseGdbusStringArray(namesOutput)) {
+      if (!name.startsWith(':')) {
+        names.add(name)
+      }
+    }
+
+    try {
+      const activatableCmd = `gdbus call ${busFlag} --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ListActivatableNames`
+      const activatableOutput = await this.tunnelManager.runCommand(connectionId, activatableCmd)
+      for (const name of this.parseGdbusStringArray(activatableOutput)) {
+        if (!name.startsWith(':')) {
+          names.add(name)
+        }
+      }
+    } catch {
+      // Keep active services visible even if activatable listing is unavailable.
+    }
+
+    return Array.from(names).sort()
   }
 
   async getServiceInfo(connectionId: string, serviceName: string, busType: 'session' | 'system'): Promise<ServiceInfo> {
     const busFlag = busType === 'system' ? '--system' : '--session'
+    let isActivatable = false
+
+    try {
+      const cmd = `gdbus call ${busFlag} --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ListActivatableNames`
+      const output = await this.tunnelManager.runCommand(connectionId, cmd)
+      isActivatable = this.parseGdbusStringArray(output).includes(serviceName)
+    } catch {
+      // ignore
+    }
 
     // Get unique name
     let uniqueName: string | null = null
@@ -31,7 +65,7 @@ export class RemoteDBusExplorer {
     }
 
     if (!uniqueName) {
-      return { serviceName, uniqueName: null, pid: null, processCmd: null, startTime: null, isActive: false }
+      return { serviceName, uniqueName: null, pid: null, processCmd: null, startTime: null, isActive: false, isActivatable }
     }
 
     // Get PID
@@ -64,7 +98,13 @@ export class RemoteDBusExplorer {
       }
     }
 
-    return { serviceName, uniqueName, pid, processCmd, startTime, isActive: true }
+    return { serviceName, uniqueName, pid, processCmd, startTime, isActive: true, isActivatable }
+  }
+
+  async activateService(connectionId: string, serviceName: string, busType: 'session' | 'system'): Promise<void> {
+    const busFlag = busType === 'system' ? '--system' : '--session'
+    const cmd = `gdbus call ${busFlag} --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.StartServiceByName '${serviceName}' 0`
+    await this.tunnelManager.runCommand(connectionId, cmd)
   }
 
   async introspectServiceMembers(connectionId: string, serviceName: string, busType: 'session' | 'system'): Promise<DbusMemberInfo[]> {

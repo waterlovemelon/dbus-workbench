@@ -52,4 +52,5 @@ export interface ServiceInfo {
   processCmd: string | null
   startTime: string | null
   isActive: boolean
+  isActivatable?: boolean
 }

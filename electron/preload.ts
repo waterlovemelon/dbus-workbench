@@ -14,6 +14,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   listServices: (busType: 'session' | 'system', connectionId?: string) =>
     ipcRenderer.invoke('dbus:listServices', busType, connectionId),
 
+  startBusWatcher: (busType: 'session' | 'system') =>
+    ipcRenderer.invoke('dbus:startBusWatcher', busType),
+
+  onBusNameOwnerChanged: (callback: (event: any) => void) => {
+    ipcRenderer.on('dbus:busNameOwnerChanged', (_event, data) => callback(data))
+  },
+
+  removeBusNameOwnerChangedListener: () => {
+    ipcRenderer.removeAllListeners('dbus:busNameOwnerChanged')
+  },
+
+  activateService: (serviceName: string, busType: 'session' | 'system', connectionId?: string) =>
+    ipcRenderer.invoke('dbus:activateService', serviceName, busType, connectionId),
+
   introspectServiceMembers: (serviceName: string, busType: 'session' | 'system', connectionId?: string) =>
     ipcRenderer.invoke('dbus:introspectServiceMembers', serviceName, busType, connectionId),
 

@@ -11,6 +11,50 @@ import type { BusType, DbusMemberInfo, DbusInterfaceInfo, DbusArgumentInfo, Serv
  * - Parse introspection XML into structured TypeScript objects
  */
 export class ServiceExplorer {
+  private async listWellKnownAndActivatableNames(bus: ReturnType<typeof sessionBus>): Promise<string[]> {
+    const names = new Set<string>()
+
+    const namesReply = await bus.call(new Message({
+      type: MessageType.METHOD_CALL,
+      destination: 'org.freedesktop.DBus',
+      path: '/org/freedesktop/DBus',
+      interface: 'org.freedesktop.DBus',
+      member: 'ListNames',
+    }))
+
+    if (namesReply.type !== MessageType.METHOD_RETURN) {
+      throw new Error('Failed to list services')
+    }
+
+    for (const name of namesReply.body[0] as string[]) {
+      if (!name.startsWith(':')) {
+        names.add(name)
+      }
+    }
+
+    try {
+      const activatableReply = await bus.call(new Message({
+        type: MessageType.METHOD_CALL,
+        destination: 'org.freedesktop.DBus',
+        path: '/org/freedesktop/DBus',
+        interface: 'org.freedesktop.DBus',
+        member: 'ListActivatableNames',
+      }))
+
+      if (activatableReply.type === MessageType.METHOD_RETURN) {
+        for (const name of activatableReply.body[0] as string[]) {
+          if (!name.startsWith(':')) {
+            names.add(name)
+          }
+        }
+      }
+    } catch {
+      // Some buses may not expose activatable names; keep active services visible.
+    }
+
+    return Array.from(names).sort()
+  }
+
   /**
    * List all services on the specified bus
    */
@@ -18,29 +62,7 @@ export class ServiceExplorer {
     const bus = this.getBus(busType)
 
     try {
-      // Call org.freedesktop.DBus.ListNames
-      const method = new Message({
-        type: MessageType.METHOD_CALL,
-        destination: 'org.freedesktop.DBus',
-        path: '/org/freedesktop/DBus',
-        interface: 'org.freedesktop.DBus',
-        member: 'ListNames',
-      })
-
-      const reply = await bus.call(method)
-
-      if (reply.type !== MessageType.METHOD_RETURN) {
-        throw new Error('Failed to list services')
-      }
-
-      const names: string[] = reply.body[0]
-
-      // Filter out unique names (starting with ':') and sort
-      const services = names
-        .filter(name => !name.startsWith(':'))
-        .sort()
-
-      return services
+      return await this.listWellKnownAndActivatableNames(bus)
     } finally {
       bus.disconnect()
     }
@@ -55,21 +77,7 @@ export class ServiceExplorer {
     const result = new Map<string, ServiceInfo>()
 
     try {
-      // Get all names (well-known + unique) in one call
-      const namesReply = await bus.call(new Message({
-        type: MessageType.METHOD_CALL,
-        destination: 'org.freedesktop.DBus',
-        path: '/org/freedesktop/DBus',
-        interface: 'org.freedesktop.DBus',
-        member: 'ListNames',
-      }))
-
-      if (namesReply.type !== MessageType.METHOD_RETURN) {
-        return result
-      }
-
-      const allNames: string[] = namesReply.body[0]
-      const wellKnownNames = allNames.filter(n => !n.startsWith(':'))
+      const wellKnownNames = await this.listWellKnownAndActivatableNames(bus)
 
       // Get activatable names to distinguish active vs activatable
       let activatableNames = new Set<string>()
@@ -116,7 +124,6 @@ export class ServiceExplorer {
         // Fetch PID for each active service (parallel)
         const withPid = await Promise.all(infos.map(async (info) => {
           if (!info.uniqueName) {
-            const isActivatable = activatableNames.has(info.serviceName)
             return {
               serviceName: info.serviceName,
               uniqueName: null,
@@ -124,8 +131,8 @@ export class ServiceExplorer {
               processCmd: null,
               startTime: null,
               isActive: false,
-              isActivatable,
-            } as ServiceInfo & { isActivatable?: boolean }
+              isActivatable: activatableNames.has(info.serviceName),
+            } as ServiceInfo
           }
 
           let pid: number | null = null
@@ -170,6 +177,7 @@ export class ServiceExplorer {
             processCmd,
             startTime,
             isActive: true,
+            isActivatable: activatableNames.has(info.serviceName),
           } as ServiceInfo
         }))
 
@@ -191,6 +199,14 @@ export class ServiceExplorer {
     const bus = this.getBus(busType)
 
     try {
+      let isActivatable = false
+      try {
+        const activatableNames = await this.listWellKnownAndActivatableNames(bus)
+        isActivatable = activatableNames.includes(serviceName)
+      } catch {
+        // ignore
+      }
+
       // Get unique name via GetNameOwner
       let uniqueName: string | null = null
       try {
@@ -211,7 +227,7 @@ export class ServiceExplorer {
       }
 
       if (!uniqueName) {
-        return { serviceName, uniqueName: null, pid: null, processCmd: null, startTime: null, isActive: false }
+        return { serviceName, uniqueName: null, pid: null, processCmd: null, startTime: null, isActive: false, isActivatable }
       }
 
       // Get PID via GetConnectionUnixProcessID
@@ -251,7 +267,29 @@ export class ServiceExplorer {
         }
       }
 
-      return { serviceName, uniqueName, pid, processCmd, startTime, isActive: true }
+      return { serviceName, uniqueName, pid, processCmd, startTime, isActive: true, isActivatable }
+    } finally {
+      bus.disconnect()
+    }
+  }
+
+  async activateService(serviceName: string, busType: BusType): Promise<void> {
+    const bus = this.getBus(busType)
+
+    try {
+      const reply = await bus.call(new Message({
+        type: MessageType.METHOD_CALL,
+        destination: 'org.freedesktop.DBus',
+        path: '/org/freedesktop/DBus',
+        interface: 'org.freedesktop.DBus',
+        member: 'StartServiceByName',
+        signature: 'su',
+        body: [serviceName, 0],
+      }))
+
+      if (reply.type !== MessageType.METHOD_RETURN) {
+        throw new Error(`Failed to activate service ${serviceName}`)
+      }
     } finally {
       bus.disconnect()
     }

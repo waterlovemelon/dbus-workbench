@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { MessageType } from 'dbus-next'
 import { ServiceExplorer } from './ServiceExplorer.ts'
 
 async function captureConsoleError(run: () => Promise<void>) {
@@ -203,4 +204,37 @@ test('introspectPath parses property tags with annotation children', async () =>
   assert.equal(properties?.[0]?.signature, 's')
   assert.equal(properties?.[1]?.name, 'Name')
   assert.equal(properties?.[1]?.annotation, 'read')
+})
+
+test('listServices includes activatable services without owners', async () => {
+  const explorer = new ServiceExplorer() as any
+  let disconnected = false
+
+  explorer.getBus = () => ({
+    call: async (message: { member: string }) => {
+      if (message.member === 'ListNames') {
+        return {
+          type: MessageType.METHOD_RETURN,
+          body: [['org.freedesktop.DBus', ':1.42']],
+        }
+      }
+
+      if (message.member === 'ListActivatableNames') {
+        return {
+          type: MessageType.METHOD_RETURN,
+          body: [['org.deepin.dde.Lastore1', 'org.freedesktop.DBus']],
+        }
+      }
+
+      throw new Error(`Unexpected member ${message.member}`)
+    },
+    disconnect: () => {
+      disconnected = true
+    },
+  })
+
+  const services = await explorer.listServices('session')
+
+  assert.deepEqual(services, ['org.deepin.dde.Lastore1', 'org.freedesktop.DBus'])
+  assert.equal(disconnected, true)
 })

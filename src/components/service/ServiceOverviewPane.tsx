@@ -76,7 +76,10 @@ export function ServiceOverviewPane({
               <div>
                 <KVRow label={t('service.serviceName')} value={serviceName} />
                 <KVRow label={t('service.uniqueName')} value={uniqueName} mono />
-                <KVRow label={t('service.owningProcess')} value={isActive ? `${processName} (PID ${pid ?? '?'})` : t('service.notRunning')} />
+                <KVRow
+                  label={t('service.owningProcess')}
+                  value={isActive ? `${processName} (PID ${pid ?? '?'})` : t('service.notRunning')}
+                />
                 <KVRow label={t('service.busType')} value={busType} />
                 <KVRow label={t('service.startTime')} value={info?.startTime ? new Date(info.startTime).toLocaleString() : '-'} />
               </div>
