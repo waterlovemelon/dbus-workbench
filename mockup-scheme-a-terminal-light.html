@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scheme A — Terminal Light (Simplified)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-page: #f5f5f5;
+    --bg-card: #ffffff;
+    --bg-inset: #fafafa;
+    --border: #e0e0e0;
+    --text-0: #1a1a1a;
+    --text-1: #555;
+    --text-2: #888;
+    --text-3: #aaa;
+    --accent: #2e7d32;
+    --accent-soft: rgba(46,125,50,0.08);
+    --font-mono: 'Cascadia Code', 'SF Mono', 'Consolas', 'DejaVu Sans Mono', monospace;
+    --font-sans: 'Noto Sans CJK SC', -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-page);
+    color: var(--text-0);
+    padding: 40px;
+    min-height: 100vh;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-1);
+    margin-bottom: 6px;
+  }
+  .page-title span { color: var(--accent); font-weight: 600; }
+  .page-subtitle {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    margin-bottom: 48px;
+    font-family: var(--font-mono);
+  }
+
+  .scheme-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .scheme-grid .full { grid-column: 1 / -1; }
+
+  .scheme-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  /* ── Pane ── */
+  .pane {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  .pane-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-inset);
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .pane-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-0);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pane-title .prefix { color: var(--text-3); }
+  .pane-title .name { color: var(--accent); }
+
+  /* ── Tag (replaces badges) ── */
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+    padding: 1px 6px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  /* ── Key-value rows ── */
+  .kv-section {
+    padding: 14px 20px;
+  }
+  .kv-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 10px;
+  }
+  .kv-row {
+    display: flex;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  .kv-row + .kv-row { border-top: 1px solid var(--bg-page); }
+  .kv-key {
+    width: 120px;
+    flex-shrink: 0;
+    color: var(--text-2);
+  }
+  .kv-val {
+    color: var(--text-0);
+    word-break: break-all;
+  }
+  .kv-val.mono { font-family: var(--font-mono); font-size: 12px; }
+  .kv-val.dim { color: var(--text-2); }
+
+  /* ── Stats ── */
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-inset);
+    font-size: 12px;
+    color: var(--text-1);
+  }
+  .stats-bar .count { font-weight: 700; }
+
+  /* ── Command preview ── */
+  .cmd-preview {
+    margin: 10px 20px 14px;
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-1);
+    overflow-x: auto;
+  }
+
+  /* ── Method header ── */
+  .method-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .method-interface {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 2px;
+  }
+  .method-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-0);
+    margin-bottom: 14px;
+  }
+  .param-row {
+    display: flex;
+    gap: 12px;
+  }
+  .param-box {
+    flex: 1;
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+  }
+  .param-box-label {
+    font-size: 10px;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+  .param-box-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-1);
+  }
+
+  /* ── Argument form ── */
+  .arg-form { padding: 14px 20px; }
+  .arg-form-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 10px;
+  }
+  .arg-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .arg-label {
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .arg-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-0);
+  }
+  .arg-type {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-2);
+  }
+  .arg-input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-0);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .arg-input:focus { border-color: var(--accent); }
+  .arg-input::placeholder { color: var(--text-3); }
+
+  /* ── Buttons ── */
+  .actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 14px;
+  }
+  .btn {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #256b29; }
+  .btn-secondary {
+    background: var(--bg-inset);
+    color: var(--text-1);
+  }
+  .btn-secondary:hover { background: var(--bg-page); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-2);
+    border-color: transparent;
+  }
+  .btn-ghost:hover { color: var(--text-0); }
+
+  /* ── Result ── */
+  .result-block {
+    margin: 0 20px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .result-header {
+    padding: 6px 12px;
+    background: var(--bg-inset);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .result-header.error { color: #c62828; }
+  .result-body {
+    padding: 10px 12px;
+    background: var(--bg-inset);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-1);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ── Property meta ── */
+  .meta-rows {
+    margin-left: 40px;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .meta-row {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .meta-row strong { color: var(--text-0); font-weight: 500; }
+
+  /* ── Access section ── */
+  .access-section {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .access-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 10px;
+  }
+  .value-display {
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .value-type {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title"><span>Scheme A</span> — Terminal Light</div>
+<div class="page-subtitle">// simplified</div>
+
+<div class="scheme-grid">
+
+  <!-- ═══════ ServiceOverviewPane ═══════ -->
+  <div>
+    <div class="scheme-label">Service Overview</div>
+    <div class="pane">
+      <div class="pane-header">
+        <button class="back-btn">&larr;</button>
+        <div class="pane-title">
+          <span class="prefix">service: </span>
+          <span class="name">org.freedesktop.login1</span>
+        </div>
+        <span class="tag">system</span>
+        <span class="tag">active</span>
+      </div>
+      <div class="kv-section">
+        <div class="kv-section-title">基本信息</div>
+        <div class="kv-row">
+          <span class="kv-key">名称</span>
+          <span class="kv-val mono">org.freedesktop.login1</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">唯一标识</span>
+          <span class="kv-val mono">:1.15</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">进程</span>
+          <span class="kv-val">systemd <span class="dim">(PID 1)</span></span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">总线</span>
+          <span class="kv-val">system</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">启动时间</span>
+          <span class="kv-val dim">2026/05/22 09:31:07</span>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="kv-section">
+        <div class="kv-section-title">启动命令</div>
+        <div class="cmd-preview">/usr/lib/systemd/systemd-logind</div>
+      </div>
+      <div class="cmd-preview" style="margin-top:0">
+        dbus-monitor --system "destination='org.freedesktop.login1'"
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ InterfacePane ═══════ -->
+  <div>
+    <div class="scheme-label">Interface Detail</div>
+    <div class="pane">
+      <div class="pane-header">
+        <button class="back-btn">&larr;</button>
+        <div class="pane-title">
+          <span class="prefix">iface: </span>
+          <span class="name">org.freedesktop.login1.Manager</span>
+        </div>
+      </div>
+      <div class="kv-section">
+        <div class="kv-section-title">接口信息</div>
+        <div class="kv-row">
+          <span class="kv-key">接口</span>
+          <span class="kv-val mono">org.freedesktop.login1.Manager</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">路径</span>
+          <span class="kv-val mono">/org/freedesktop/login1</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">服务</span>
+          <span class="kv-val mono">org.freedesktop.login1</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">总线</span>
+          <span class="kv-val">system</span>
+        </div>
+      </div>
+      <div class="stats-bar">
+        <span><span class="count">12</span> 方法</span>
+        <span><span class="count">6</span> 信号</span>
+        <span><span class="count">18</span> 属性</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MethodPane ═══════ -->
+  <div class="full">
+    <div class="scheme-label">Method Invocation</div>
+    <div class="pane" style="max-width: 800px;">
+      <div class="method-header">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+          <button class="back-btn">&larr;</button>
+          <div>
+            <div class="method-interface">org.freedesktop.login1.Manager</div>
+            <div class="method-name">ActivateSession</div>
+          </div>
+        </div>
+        <div class="param-row">
+          <div class="param-box">
+            <div class="param-box-label">输入参数</div>
+            <div class="param-box-value">session_id: string</div>
+          </div>
+          <div class="param-box">
+            <div class="param-box-label">输出参数</div>
+            <div class="param-box-value">none</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arg-form">
+        <div class="arg-form-title">参数</div>
+        <div class="arg-item">
+          <div class="arg-label">
+            <div class="arg-name">session_id</div>
+            <div class="arg-type">string</div>
+          </div>
+          <input class="arg-input" type="text" placeholder="输入 session ID..." value="c1" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary">调用</button>
+        <button class="btn btn-secondary">重置</button>
+        <button class="btn btn-ghost">复制命令</button>
+      </div>
+
+      <div class="cmd-preview" style="margin-top:0">
+        dbus-send --system --dest=org.freedesktop.login1 --type=method_call --print-reply /org/freedesktop/login1 org.freedesktop.login1.Manager.ActivateSession string:"c1"
+      </div>
+
+      <div class="result-block">
+        <div class="result-header">成功</div>
+        <div class="result-body">"result": "Session activated"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ PropertyPane ═══════ -->
+  <div class="full">
+    <div class="scheme-label">Property Access</div>
+    <div class="pane" style="max-width: 800px;">
+      <div class="method-header">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <button class="back-btn">&larr;</button>
+          <div>
+            <div class="method-interface">org.freedesktop.login1.Manager</div>
+            <div class="method-name">Docked</div>
+          </div>
+        </div>
+        <div class="meta-rows">
+          <div class="meta-row">类型: <strong>boolean</strong></div>
+          <div class="meta-row">访问: <strong>read</strong></div>
+          <div class="meta-row">路径: <strong>/org/freedesktop/login1</strong></div>
+          <div class="meta-row">接口: <strong>org.freedesktop.login1.Manager</strong></div>
+        </div>
+      </div>
+
+      <div class="access-section">
+        <div class="access-title">获取属性</div>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <button class="btn btn-primary">获取</button>
+          <button class="btn btn-ghost">复制命令</button>
+        </div>
+        <div class="cmd-preview" style="margin:0">
+          dbus-send --system --dest=org.freedesktop.login1 --print-reply /org/freedesktop/login1 org.freedesktop.DBus.Properties.Get: string:"org.freedesktop.login1.Manager" string:"Docked"
+        </div>
+        <div class="value-display">false</div>
+        <div class="value-type">类型: boolean</div>
+      </div>
+
+      <div class="access-section">
+        <div class="access-title">设置属性</div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+          <input class="arg-input" type="text" placeholder="输入新值... (boolean)" style="flex:1" />
+          <button class="btn btn-primary">设置</button>
+          <button class="btn btn-ghost">复制命令</button>
+        </div>
+        <div class="cmd-preview" style="margin:0">
+          dbus-send --system --dest=org.freedesktop.login1 --print-reply /org/freedesktop/login1 org.freedesktop.DBus.Properties.Set: string:"org.freedesktop.login1.Manager" string:"Docked" variant:string:"true"
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
