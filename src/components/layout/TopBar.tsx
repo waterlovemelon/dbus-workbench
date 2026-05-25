@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useTranslation } from '../../i18n'
+import appIcon from '../../../assets/icons/app-icon.svg'
 
 interface TopBarProps {
   onOpenRemoteDrawer?: () => void
@@ -44,6 +45,12 @@ export function TopBar({ onOpenRemoteDrawer }: TopBarProps) {
     >
       {/* Left: App title */}
       <div className="flex items-center gap-2">
+        <img
+          src={appIcon}
+          alt=""
+          aria-hidden="true"
+          className="h-5 w-5 shrink-0 select-none pointer-events-none"
+        />
         <span className="text-sm text-text-2">D-Bus Workbench</span>
       </div>
 

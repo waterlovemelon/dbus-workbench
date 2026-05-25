@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Bold bitten watermelon slice</title>
+  <desc id="desc">A thick, high-contrast watermelon wedge with a bite missing from the upper right.</desc>
+  <path d="M73 296c17 58 53 105 101 138 40 27 88 42 142 42 66 0 127-24 174-69l-55-54c-33 29-74 44-119 44-77 0-143-43-176-109z" fill="#eef3b5"/>
+  <path d="M92 266c14 51 46 93 89 121 38 26 84 39 135 39 59 0 111-18 156-57l-37-38c-31 26-73 40-119 40-67 0-126-29-162-89z" fill="#1f9d48"/>
+  <path d="M106 248c11 39 35 71 69 94 39 27 88 42 141 42 56 0 104-17 147-52l-47-47c-10-10-16-24-16-38 0-14 6-28 16-38l43-41c-36-53-88-80-155-80-101 0-168 58-198 160z" fill="#ff4a5f"/>
+  <circle cx="405" cy="172" r="44" fill="#fff8ec"/>
+  <circle cx="441" cy="199" r="33" fill="#fff8ec"/>
+  <circle cx="398" cy="228" r="28" fill="#fff8ec"/>
+  <ellipse cx="183" cy="278" rx="10" ry="20" transform="rotate(-28 183 278)" fill="#241513"/>
+  <ellipse cx="247" cy="233" rx="10" ry="20" transform="rotate(-14 247 233)" fill="#241513"/>
+  <ellipse cx="316" cy="225" rx="10" ry="20" transform="rotate(12 316 225)" fill="#241513"/>
+  <ellipse cx="223" cy="329" rx="10" ry="20" transform="rotate(-8 223 329)" fill="#241513"/>
+  <ellipse cx="293" cy="314" rx="10" ry="20" transform="rotate(10 293 314)" fill="#241513"/>
+  <path d="M132 237c16-53 57-105 128-105 43 0 81 13 113 39" fill="none" stroke="#ff7a89" stroke-linecap="round" stroke-width="18"/>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">D-Bus icon concept transit</title>
+  <desc id="desc">A compact bus silhouette shaped like the letter D.</desc>
+  <rect width="512" height="512" rx="124" fill="#f7f2e8"/>
+  <path d="M118 108h110c100 0 184 78 184 176s-84 176-184 176H118z" fill="#101d29"/>
+  <path d="M154 144h74c79 0 147 61 147 140s-68 140-147 140h-74z" fill="#ecfbff"/>
+  <rect x="158" y="187" width="164" height="87" rx="30" fill="#44b8d9"/>
+  <rect x="176" y="203" width="44" height="43" rx="12" fill="#dff8ff"/>
+  <rect x="231" y="203" width="44" height="43" rx="12" fill="#dff8ff"/>
+  <rect x="286" y="203" width="24" height="43" rx="10" fill="#dff8ff"/>
+  <path d="M154 274h197v31H154z" fill="#ff8b2b"/>
+  <circle cx="198" cy="318" r="25" fill="#101d29"/>
+  <circle cx="287" cy="318" r="25" fill="#101d29"/>
+  <circle cx="199" cy="318" r="10" fill="#f7f2e8"/>
+  <circle cx="288" cy="318" r="10" fill="#f7f2e8"/>
+  <path d="M340 174c29 8 54 31 66 61" fill="none" stroke="#44b8d9" stroke-linecap="round" stroke-width="14"/>
+  <path d="M330 147c43 11 80 45 97 91" fill="none" stroke="#44b8d9" stroke-linecap="round" stroke-width="10" opacity=".8"/>
+</svg>

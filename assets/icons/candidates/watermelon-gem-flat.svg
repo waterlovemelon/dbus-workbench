@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Geometric bitten watermelon icon</title>
+  <desc id="desc">A simplified faceted watermelon icon with a bite removed.</desc>
+  <path d="M80 305c26 96 115 159 217 159 64 0 124-24 169-67l-52-47c-31 26-69 39-112 39-72 0-135-36-176-98z" fill="#ebf0ae"/>
+  <path d="M98 276c22 74 90 123 174 123 54 0 101-17 139-49l-28-27c-31 22-67 33-108 33-62 0-112-26-149-81z" fill="#16984a"/>
+  <path d="M116 250c18 58 73 97 150 97 48 0 89-14 123-40l-38-38c-10-10-15-22-15-35 0-13 5-25 15-35l34-33c-29-34-71-52-125-52-80 0-126 48-144 136z" fill="#ff4d62"/>
+  <path d="M389 166l29 19-4 34-32 16-31-13-7-33 20-27z" fill="#fff7ed"/>
+  <path d="M428 190l23 12-1 25-22 15-23-8-4-23 11-19z" fill="#fff7ed"/>
+  <path d="M380 223l19 10-2 21-20 11-20-8-4-19 12-16z" fill="#fff7ed"/>
+  <path d="M185 278l17-25 11 28-18 27z" fill="#2a1917"/>
+  <path d="M245 232l15-24 13 25-14 29z" fill="#2a1917"/>
+  <path d="M311 229l13-19 14 20-12 27z" fill="#2a1917"/>
+  <path d="M227 319l14-22 12 22-12 26z" fill="#2a1917"/>
+</svg>

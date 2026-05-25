@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">D-Bus icon concept network</title>
+  <desc id="desc">A geometric D shaped bus mixed with system nodes.</desc>
+  <rect width="512" height="512" rx="124" fill="#f2f4ef"/>
+  <path d="M116 104h114c101 0 182 81 182 180s-81 180-182 180H116z" fill="#263238"/>
+  <path d="M157 145h73c79 0 143 63 143 139s-64 139-143 139h-73z" fill="#ffffff"/>
+  <path d="M152 234h182" stroke="#35c287" stroke-linecap="round" stroke-width="18"/>
+  <path d="M152 284h182" stroke="#35c287" stroke-linecap="round" stroke-width="18"/>
+  <circle cx="192" cy="234" r="20" fill="#263238"/>
+  <circle cx="264" cy="234" r="20" fill="#263238"/>
+  <circle cx="319" cy="284" r="20" fill="#263238"/>
+  <circle cx="211" cy="284" r="20" fill="#263238"/>
+  <path d="M336 188l34 18-5 36-33 17-31-15-6-33 20-24z" fill="#ffb627"/>
+  <path d="M346 154c22 6 41 22 53 43" fill="none" stroke="#ffb627" stroke-linecap="round" stroke-width="12"/>
+  <path d="M338 130c35 9 65 34 83 67" fill="none" stroke="#ffb627" stroke-linecap="round" stroke-width="9" opacity=".8"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">D-Bus icon concept mono</title>
+  <desc id="desc">A minimal monochrome D shaped bus for developer tool branding.</desc>
+  <rect width="512" height="512" rx="124" fill="#f6f4ef"/>
+  <path d="M120 112h111c95 0 173 78 173 172s-78 172-173 172H120z" fill="#111111"/>
+  <path d="M165 157h66c70 0 127 57 127 127s-57 127-127 127h-66z" fill="#f6f4ef"/>
+  <rect x="156" y="212" width="146" height="74" rx="24" fill="#111111"/>
+  <circle cx="193" cy="306" r="22" fill="#111111"/>
+  <circle cx="273" cy="306" r="22" fill="#111111"/>
+  <circle cx="193" cy="306" r="7" fill="#f6f4ef"/>
+  <circle cx="273" cy="306" r="7" fill="#f6f4ef"/>
+  <rect x="175" y="228" width="32" height="24" rx="8" fill="#f6f4ef"/>
+  <rect x="217" y="228" width="32" height="24" rx="8" fill="#f6f4ef"/>
+  <rect x="259" y="228" width="24" height="24" rx="8" fill="#f6f4ef"/>
+  <path d="M325 176c22 7 40 23 51 45" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="11"/>
+  <path d="M318 151c34 9 63 33 79 64" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="8" opacity=".6"/>
+</svg>

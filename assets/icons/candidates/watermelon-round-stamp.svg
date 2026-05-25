@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Round bitten watermelon stamp</title>
+  <desc id="desc">A circular badge containing a bitten watermelon slice.</desc>
+  <circle cx="256" cy="256" r="222" fill="#f5f0dc"/>
+  <circle cx="256" cy="256" r="198" fill="#163a28"/>
+  <circle cx="256" cy="256" r="178" fill="#f7f3e7"/>
+  <path d="M122 288c15 42 42 77 79 101 32 21 69 32 110 32 52 0 99-19 136-55l-42-40c-27 23-58 34-94 34-63 0-117-30-151-83z" fill="#dce89d"/>
+  <path d="M135 264c12 34 35 63 66 84 30 20 67 31 110 31 46 0 88-15 123-46l-26-27c-26 19-56 29-90 29-58 0-107-24-138-74z" fill="#27a04f"/>
+  <path d="M146 250c9 27 28 50 55 67 29 20 67 30 112 30 46 0 84-13 115-41l-37-37c-9-9-14-21-14-33 0-13 5-25 14-34l33-30c-28-38-67-58-118-58-82 0-138 47-160 136z" fill="#ff5a67"/>
+  <circle cx="374" cy="185" r="36" fill="#fff8ef"/>
+  <circle cx="402" cy="210" r="27" fill="#fff8ef"/>
+  <circle cx="370" cy="232" r="22" fill="#fff8ef"/>
+  <ellipse cx="206" cy="267" rx="8" ry="16" transform="rotate(-20 206 267)" fill="#271715"/>
+  <ellipse cx="261" cy="236" rx="8" ry="16" transform="rotate(-5 261 236)" fill="#271715"/>
+  <ellipse cx="314" cy="238" rx="8" ry="16" transform="rotate(16 314 238)" fill="#271715"/>
+  <ellipse cx="236" cy="311" rx="8" ry="16" transform="rotate(-6 236 311)" fill="#271715"/>
+</svg>

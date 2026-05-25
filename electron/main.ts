@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import { registerAllIPCHandlers, cleanupSignalMonitor } from './ipc/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const appIconPath = path.join(__dirname, '../assets/icons/png/256x256.png')
 
 // Disable GPU hardware acceleration for better compatibility
 app.disableHardwareAcceleration()
@@ -16,6 +17,7 @@ function createWindow() {
     height: 800,
     minWidth: 1100,
     minHeight: 680,
+    icon: appIconPath,
     frame: false, // Frameless window for custom title bar
     backgroundColor: '#fafafa', // Light background
     webPreferences: {

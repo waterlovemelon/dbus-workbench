@@ -59,7 +59,8 @@
     "productName": "D-Bus Workbench",
     "files": [
       "dist/**/*",
-      "dist-electron/**/*"
+      "dist-electron/**/*",
+      "assets/icons/**/*"
     ],
     "extraResources": [
       {
@@ -72,6 +73,7 @@
       }
     ],
     "linux": {
+      "icon": "assets/icons/png",
       "target": [
         {
           "target": "AppImage",
