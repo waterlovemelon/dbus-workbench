@@ -28,19 +28,19 @@ export function TreeNode({ node, selectedId, onSelect, level, guideLines = [], i
   const getIcon = () => {
     switch (node.type) {
       case 'path':
-        return <Folder className="h-3.5 w-3.5 text-blue-400" />
+        return <Folder className="h-3.5 w-3.5 shrink-0 text-blue-400" />
       case 'interface':
-        return <File className="h-3.5 w-3.5 text-green-400" />
+        return <File className="h-3.5 w-3.5 shrink-0 text-green-400" />
       case 'member':
         return node.member?.type === 'method' ? (
-          <Zap className="h-3.5 w-3.5 text-yellow-400" />
+          <Zap className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
         ) : node.member?.type === 'signal' ? (
-          <Activity className="h-3.5 w-3.5 text-purple-400" />
+          <Activity className="h-3.5 w-3.5 shrink-0 text-purple-400" />
         ) : (
-          <Settings className="h-3.5 w-3.5 text-cyan-400" />
+          <Settings className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
         )
       default:
-        return <File className="h-3.5 w-3.5" />
+        return <File className="h-3.5 w-3.5 shrink-0" />
     }
   }
 
@@ -63,7 +63,7 @@ export function TreeNode({ node, selectedId, onSelect, level, guideLines = [], i
   return (
     <div>
       <div
-        className={`flex cursor-pointer items-center gap-1 rounded px-1 py-0.5 hover:bg-muted ${
+        className={`flex cursor-pointer items-center gap-1 overflow-hidden rounded px-1 py-0.5 hover:bg-muted ${
           isSelected ? 'bg-primary/20 text-primary' : ''
         }`}
         onClick={handleClick}
@@ -74,10 +74,10 @@ export function TreeNode({ node, selectedId, onSelect, level, guideLines = [], i
             {guideLines.map((ancestorIsLast, i) => (
               <div
                 key={i}
-                className="relative w-5 shrink-0"
+                className="relative w-3 shrink-0"
               >
                 {!ancestorIsLast && (
-                  <div className="absolute left-[9px] top-0 bottom-0 w-px bg-border" />
+                  <div className="absolute left-[5px] top-0 bottom-0 w-px bg-border" />
                 )}
               </div>
             ))}
@@ -85,14 +85,14 @@ export function TreeNode({ node, selectedId, onSelect, level, guideLines = [], i
         )}
         {/* Current node connector */}
         {level > 0 && (
-          <div className="relative w-5 shrink-0 self-stretch">
+          <div className="relative w-3 shrink-0 self-stretch">
             {currentGuideIsLast ? (
               <>
-                <div className="absolute left-[9px] top-0 h-1/2 w-px bg-border" />
-                <div className="absolute left-[9px] top-1/2 w-[9px] h-px bg-border" />
+                <div className="absolute left-[5px] top-0 h-1/2 w-px bg-border" />
+                <div className="absolute left-[5px] top-1/2 w-[5px] h-px bg-border" />
               </>
             ) : (
-              <div className="absolute left-[9px] top-0 bottom-0 w-px bg-border" />
+              <div className="absolute left-[5px] top-0 bottom-0 w-px bg-border" />
             )}
           </div>
         )}
@@ -103,10 +103,10 @@ export function TreeNode({ node, selectedId, onSelect, level, guideLines = [], i
             <ChevronRight className="h-3 w-3 shrink-0" />
           )
         ) : (
-          <span className="w-3" />
+          <span className="w-3 shrink-0" />
         )}
         {getIcon()}
-        <span className="truncate text-base">
+        <span className="min-w-0 truncate text-base">
           {node.type === 'member' && node.member ? formatMemberLabel(node.member) : node.label}
         </span>
       </div>

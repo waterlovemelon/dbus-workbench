@@ -339,7 +339,7 @@ export function Sidebar() {
                   </button>
 
                   {isExpanded && (
-                    <div className="ml-1">
+                    <div className="ml-0.5">
                       {isLoadingMembers ? (
                         <div className="px-2 py-1 text-sm text-text-2">
                           {t('sidebar.loadingMembers')}
