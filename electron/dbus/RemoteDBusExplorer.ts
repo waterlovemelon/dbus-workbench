@@ -74,7 +74,10 @@ export class RemoteDBusExplorer {
     return members
   }
 
-  private async exploreAndCollect(connectionId: string, serviceName: string, busType: 'session' | 'system', path: string): Promise<DbusMemberInfo[]> {
+  private async exploreAndCollect(connectionId: string, serviceName: string, busType: 'session' | 'system', path: string, visited = new Set<string>()): Promise<DbusMemberInfo[]> {
+    if (visited.has(path)) return []
+    visited.add(path)
+
     const busFlag = busType === 'system' ? '--system' : '--session'
     const cmd = `gdbus call ${busFlag} --dest ${serviceName} --object-path ${path} --method org.freedesktop.DBus.Introspectable.Introspect`
     console.log(`[RemoteDBus] exploring path="${path}"`)
@@ -109,7 +112,7 @@ export class RemoteDBusExplorer {
         if (!nameMatch) continue
         const childPath = path === '/' ? `/${nameMatch[1]}` : `${path}/${nameMatch[1]}`
         try {
-          const childMembers = await this.exploreAndCollect(connectionId, serviceName, busType, childPath)
+          const childMembers = await this.exploreAndCollect(connectionId, serviceName, busType, childPath, visited)
           members.push(...childMembers)
         } catch (err) {
           console.error(`[RemoteDBus] child "${childPath}" FAILED:`, err)

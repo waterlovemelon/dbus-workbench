@@ -307,8 +307,12 @@ export class ServiceExplorer {
   private async explorePaths(
     bus: any,
     serviceName: string,
-    path: string
+    path: string,
+    visited = new Set<string>()
   ): Promise<string[]> {
+    if (visited.has(path)) return []
+    visited.add(path)
+
     try {
       const paths: string[] = [path]
       const xml = await this.getIntrospectionXML(bus, serviceName, path)
@@ -320,7 +324,7 @@ export class ServiceExplorer {
           if (nameMatch && nameMatch[1]) {
             const nodeName = nameMatch[1]
             const childPath = path === '/' ? `/${nodeName}` : `${path}/${nodeName}`
-            const childPaths = await this.explorePaths(bus, serviceName, childPath)
+            const childPaths = await this.explorePaths(bus, serviceName, childPath, visited)
             paths.push(...childPaths)
           }
         }

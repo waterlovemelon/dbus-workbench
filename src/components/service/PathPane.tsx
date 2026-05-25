@@ -3,6 +3,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { KVRow } from '../common/KVRow'
 import { useTranslation } from '../../i18n'
 
 interface PathPaneProps {
@@ -38,10 +39,10 @@ export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) 
             <CardTitle className="text-sm">{t('path.pathInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-0">
-              <InfoItem label={t('path.objectPath')} value={path} mono />
-              <InfoItem label={t('path.owningService')} value={serviceName} mono />
-              <InfoItem label={t('path.busType')} value={busType} />
+            <div>
+              <KVRow label={t('path.objectPath')} value={path} mono />
+              <KVRow label={t('path.owningService')} value={serviceName} mono />
+              <KVRow label={t('path.busType')} value={busType} />
             </div>
           </CardContent>
         </Card>
@@ -52,11 +53,3 @@ export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) 
   )
 }
 
-function InfoItem({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="border-b border-r border-border px-4 py-2.5 last:border-r-0 [&:nth-child(2n)]:border-r-0 [&:nth-last-child(-n+2)]:border-b-0">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-0.5 text-sm font-medium ${mono ? 'font-mono' : ''}`}>{value}</div>
-    </div>
-  )
-}

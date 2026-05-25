@@ -79,7 +79,7 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-baseline gap-3">
-      <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="w-24 shrink-0 text-[11px] font-medium text-muted-foreground">{label}</span>
       <span className={`text-sm ${mono ? 'font-mono' : ''}`}>{value}</span>
     </div>
   )

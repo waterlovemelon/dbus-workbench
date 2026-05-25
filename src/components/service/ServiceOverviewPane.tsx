@@ -6,6 +6,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType, ServiceInfo } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { KVRow } from '../common/KVRow'
 import { useTranslation } from '../../i18n'
 
 interface ServiceOverviewPaneProps {
@@ -91,12 +92,12 @@ export function ServiceOverviewPane({
             {isLoading ? (
               <div className="py-4 text-center text-sm text-muted-foreground">{t('service.loading')}</div>
             ) : (
-              <div className="grid grid-cols-2 gap-0">
-                <InfoItem label={t('service.serviceName')} value={serviceName} />
-                <InfoItem label={t('service.uniqueName')} value={uniqueName} mono />
-                <InfoItem label={t('service.owningProcess')} value={isActive ? `${processName} (PID ${pid ?? '?'})` : t('service.notRunning')} />
-                <InfoItem label={t('service.busType')} value={busType} />
-                <InfoItem label={t('service.startTime')} value={info?.startTime ? new Date(info.startTime).toLocaleString() : '-'} />
+              <div>
+                <KVRow label={t('service.serviceName')} value={serviceName} />
+                <KVRow label={t('service.uniqueName')} value={uniqueName} mono />
+                <KVRow label={t('service.owningProcess')} value={isActive ? `${processName} (PID ${pid ?? '?'})` : t('service.notRunning')} />
+                <KVRow label={t('service.busType')} value={busType} />
+                <KVRow label={t('service.startTime')} value={info?.startTime ? new Date(info.startTime).toLocaleString() : '-'} />
               </div>
             )}
 
@@ -144,11 +145,3 @@ export function ServiceOverviewPane({
   )
 }
 
-function InfoItem({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="border-b border-r border-border px-4 py-2.5 last:border-r-0 [&:nth-child(2n)]:border-r-0 [&:nth-last-child(-n+2)]:border-b-0">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-0.5 text-sm font-medium ${mono ? 'font-mono' : ''}`}>{value}</div>
-    </div>
-  )
-}

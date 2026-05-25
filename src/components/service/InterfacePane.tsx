@@ -3,6 +3,7 @@ import { MonitoringCommands } from '../common/MonitoringCommands'
 import type { BusType, DbusMemberInfo } from '../../types/electron-api'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { KVRow } from '../common/KVRow'
 import { useTranslation } from '../../i18n'
 
 interface InterfacePaneProps {
@@ -51,13 +52,13 @@ export function InterfacePane({
             <CardTitle className="text-sm">{t('interface.interfaceInfo')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-0">
-              <InfoItem label={t('interface.interfaceName')} value={interfaceName} mono />
-              <InfoItem label={t('interface.objectPath')} value={path} mono />
-              <InfoItem label={t('interface.owningService')} value={serviceName} mono />
-              <InfoItem label={t('interface.busType')} value={busType} />
+            <div>
+              <KVRow label={t('interface.interfaceName')} value={interfaceName} mono />
+              <KVRow label={t('interface.objectPath')} value={path} mono />
+              <KVRow label={t('interface.owningService')} value={serviceName} mono />
+              <KVRow label={t('interface.busType')} value={busType} />
             </div>
-            <div className="flex gap-4 border-t border-border bg-muted/30 px-4 py-2.5">
+            <div className="mt-2 flex gap-5 border-t border-border pt-2.5">
               <StatChip icon={<Zap className="h-3 w-3 text-orange-500" />} count={methods.length} label={t('interface.methods')} />
               <StatChip icon={<Activity className="h-3 w-3 text-purple-500" />} count={signals.length} label={t('interface.signals')} />
               <StatChip icon={<Settings className="h-3 w-3 text-cyan-500" />} count={properties.length} label={t('interface.properties')} />
@@ -71,14 +72,6 @@ export function InterfacePane({
   )
 }
 
-function InfoItem({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
-  return (
-    <div className="border-b border-r border-border px-4 py-2.5 last:border-r-0 [&:nth-child(2n)]:border-r-0 [&:nth-last-child(-n+2)]:border-b-0">
-      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-0.5 text-sm font-medium ${mono ? 'font-mono' : ''}`}>{value}</div>
-    </div>
-  )
-}
 
 function StatChip({ icon, count, label }: { icon: React.ReactNode; count: number; label: string }) {
   return (

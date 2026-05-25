@@ -3,7 +3,8 @@
  * Main application layout with resizable panels
  */
 
-import { useEffect, useState } from 'react'
+import { Component, useEffect, useState } from 'react'
+import type { ErrorInfo, ReactNode } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { TopBar } from './TopBar'
 import { Sidebar } from './Sidebar'
@@ -17,6 +18,41 @@ import { RemoteDrawer } from '../remote/RemoteDrawer'
 import { useAppStore } from '../../stores/appStore'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useTranslation } from '../../i18n'
+
+class PanelErrorBoundary extends Component<
+  { children: ReactNode; name: string },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null }
+
+  static getDerivedStateFromError(error: Error) {
+    return { error }
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(`[ErrorBoundary:${this.props.name}]`, error, info.componentStack)
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center p-8 text-center">
+          <h2 className="text-lg font-semibold text-red-500">{this.props.name} crashed</h2>
+          <pre className="mt-3 max-h-[60vh] overflow-auto rounded bg-muted p-4 text-left text-xs text-muted-foreground">
+            {this.state.error.message}
+          </pre>
+          <button
+            className="mt-4 rounded bg-primary px-4 py-2 text-sm text-primary-foreground"
+            onClick={() => this.setState({ error: null })}
+          >
+            Retry
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 export function AppShell() {
   const { t } = useTranslation()
@@ -132,7 +168,9 @@ export function AppShell() {
         <PanelGroup direction="horizontal">
           {/* Sidebar */}
           <Panel defaultSize={50} minSize={20} maxSize={55}>
-            <Sidebar />
+            <PanelErrorBoundary name="Sidebar">
+              <Sidebar />
+            </PanelErrorBoundary>
           </Panel>
 
           {/* Resize Handle */}
@@ -140,7 +178,9 @@ export function AppShell() {
 
           {/* Main Content Area */}
           <Panel defaultSize={50} minSize={30}>
-            {renderContent()}
+            <PanelErrorBoundary name="Detail">
+              {renderContent()}
+            </PanelErrorBoundary>
           </Panel>
         </PanelGroup>
       </div>

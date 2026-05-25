@@ -16,11 +16,17 @@ export function ArgumentForm({ args, values, onChange, disabled }: ArgumentFormP
   const { t } = useTranslation()
   const parsedArgs = useMemo(
     () =>
-      args.map((arg) => ({
-        ...parseDbusSignature(arg.type)[0],
-        name: arg.name,
-        rawType: arg.type,
-      })),
+      args.map((arg) => {
+        const parsed = parseDbusSignature(arg.type)[0]
+        return {
+          type: parsed?.type ?? arg.type,
+          description: parsed?.description ?? '',
+          complexType: parsed?.complexType,
+          elementType: parsed?.elementType,
+          name: arg.name,
+          rawType: arg.type,
+        }
+      }),
     [args]
   )
   const [complexInputTexts, setComplexInputTexts] = useState<Record<number, string>>({})
