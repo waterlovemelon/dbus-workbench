@@ -15,11 +15,7 @@ interface PathPaneProps {
 
 export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) {
   const { t } = useTranslation()
-  const monitorCmds = [
-    { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "destination='${serviceName}',path='${path}'"` },
-    { tool: 'busctl' as const, command: `busctl --${busType} monitor ${serviceName} ${path}` },
-    { tool: 'gdbus' as const, command: `gdbus monitor --${busType} --dest ${serviceName} --object-path ${path}` },
-  ]
+  const monitorCmd = `dbus-monitor --${busType} "destination='${serviceName}',path='${path}'"`
 
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-muted/30 p-6">
@@ -31,7 +27,6 @@ export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) 
             </Button>
           )}
           <h1 className="font-mono text-lg font-semibold">{path}</h1>
-          <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">path</span>
         </div>
 
         <Card>
@@ -47,9 +42,8 @@ export function PathPane({ path, serviceName, busType, onBack }: PathPaneProps) 
           </CardContent>
         </Card>
 
-        <MonitoringCommands title={t('path.monitorPath')} scope="path-level" commands={monitorCmds} />
+        <MonitoringCommands title={t('path.monitorPath')} command={monitorCmd} />
       </div>
     </div>
   )
 }
-

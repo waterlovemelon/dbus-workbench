@@ -45,18 +45,11 @@ export function ServiceOverviewPane({
   }
 
   // Build monitoring commands
-  const serviceMonitorCmds = [
-    { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "destination='${serviceName}',type='method_call'"` },
-    { tool: 'busctl' as const, command: `busctl --${busType} monitor ${serviceName}` },
-    { tool: 'gdbus' as const, command: `gdbus monitor --${busType} --dest ${serviceName}` },
-  ]
+  const serviceMonitorCmd = `dbus-monitor --${busType} "destination='${serviceName}',type='method_call'"`
 
-  const processMonitorCmds = isActive && uniqueName !== '-'
-    ? [
-        { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "sender='${uniqueName}' OR destination='${uniqueName}'"` },
-        { tool: 'busctl' as const, command: `busctl --${busType} monitor --unique-name=${uniqueName}` },
-      ]
-    : []
+  const processMonitorCmd = isActive && uniqueName !== '-'
+    ? `dbus-monitor --${busType} "sender='${uniqueName}' OR destination='${uniqueName}'"`
+    : ''
 
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-muted/30 p-6">
@@ -69,18 +62,6 @@ export function ServiceOverviewPane({
             </Button>
           )}
           <h1 className="text-lg font-semibold">{serviceName}</h1>
-          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {busType === 'system' ? t('service.systemBus') : t('service.sessionBus')}
-          </span>
-          {isActive ? (
-            <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              {t('service.active')}
-            </span>
-          ) : (
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-              {t('service.inactive')}
-            </span>
-          )}
         </div>
 
         {/* Service Information */}
@@ -129,19 +110,16 @@ export function ServiceOverviewPane({
         {/* Monitoring Commands */}
         <MonitoringCommands
           title={t('service.monitorService')}
-          scope="service-level"
-          commands={serviceMonitorCmds}
+          command={serviceMonitorCmd}
         />
 
-        {processMonitorCmds.length > 0 && (
+        {processMonitorCmd && (
           <MonitoringCommands
             title={t('service.monitorProcess')}
-            scope="process-level"
-            commands={processMonitorCmds}
+            command={processMonitorCmd}
           />
         )}
       </div>
     </div>
   )
 }
-

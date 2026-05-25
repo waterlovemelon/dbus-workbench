@@ -26,11 +26,7 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
   const { t } = useTranslation()
   const desc = SIGNAL_DESCRIPTIONS[member.name] || t('signal.defaultDesc')
 
-  const monitorCmds = [
-    { tool: 'dbus-monitor' as const, command: `dbus-monitor --${busType} "type='signal',interface='${member.interfaceName}',member='${member.name}'"` },
-    { tool: 'busctl' as const, command: `busctl --${busType} monitor ${member.serviceName} ${member.path} ${member.interfaceName}.${member.name}` },
-    { tool: 'gdbus' as const, command: `gdbus monitor --${busType} --dest ${member.serviceName}` },
-  ]
+  const monitorCmd = `dbus-monitor --${busType} "type='signal',interface='${member.interfaceName}',member='${member.name}'"`
 
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-muted/30 p-6">
@@ -43,12 +39,6 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
             </Button>
           )}
           <h1 className="text-lg font-semibold">{member.name}</h1>
-          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {busType === 'system' ? t('signal.systemBus') : t('signal.sessionBus')}
-          </span>
-          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-            {t('signal.signal')}
-          </span>
         </div>
 
         {/* Signal Information */}
@@ -68,8 +58,7 @@ export function SignalPane({ member, busType, onBack }: SignalPaneProps) {
         {/* Monitoring Commands */}
         <MonitoringCommands
           title={t('signal.monitorSignal')}
-          scope="signal-level"
-          commands={monitorCmds}
+          command={monitorCmd}
         />
       </div>
     </div>
