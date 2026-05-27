@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Modern D-Bus introspection, method invocation, and signal monitoring tool built with Electron and React",
   "main": "dist-electron/main.js",
-  "author": "YinJie",
+  "author": "YinJie <yj.watermelon@gmail.com>",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -76,9 +76,37 @@
           "arch": [
             "x64"
           ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
         }
       ],
-      "category": "Development"
+      "category": "Development",
+      "desktop": {
+        "Name": "D-Bus Workbench",
+        "Comment": "Modern D-Bus introspection, method invocation, and signal monitoring tool",
+        "Keywords": "dbus;debug;introspection;ipc;linux;system;",
+        "StartupWMClass": "dbus-workbench-electron"
+      }
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0"
+      ],
+      "packageCategory": "devel",
+      "priority": "optional",
+      "compression": "xz"
     }
   }
 }
