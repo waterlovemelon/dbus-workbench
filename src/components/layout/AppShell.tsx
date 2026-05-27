@@ -3,21 +3,22 @@
  * Main application layout with resizable panels
  */
 
-import { Component, useEffect, useState } from 'react'
+import { Component, Suspense, lazy, useEffect, useState } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { TopBar } from './TopBar'
 import { Sidebar } from './Sidebar'
-import { MethodPane } from '../workbench/MethodPane'
-import { PropertyPane } from '../property/PropertyPane'
-import { SignalPane } from '../signal/SignalPane'
-import { ServiceOverviewPane } from '../service/ServiceOverviewPane'
-import { PathPane } from '../service/PathPane'
-import { InterfacePane } from '../service/InterfacePane'
-import { RemoteDrawer } from '../remote/RemoteDrawer'
 import { useAppStore } from '../../stores/appStore'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useTranslation } from '../../i18n'
+
+const MethodPane = lazy(() => import('../workbench/MethodPane').then(m => ({ default: m.MethodPane })))
+const PropertyPane = lazy(() => import('../property/PropertyPane').then(m => ({ default: m.PropertyPane })))
+const SignalPane = lazy(() => import('../signal/SignalPane').then(m => ({ default: m.SignalPane })))
+const ServiceOverviewPane = lazy(() => import('../service/ServiceOverviewPane').then(m => ({ default: m.ServiceOverviewPane })))
+const PathPane = lazy(() => import('../service/PathPane').then(m => ({ default: m.PathPane })))
+const InterfacePane = lazy(() => import('../service/InterfacePane').then(m => ({ default: m.InterfacePane })))
+const RemoteDrawer = lazy(() => import('../remote/RemoteDrawer').then(m => ({ default: m.RemoteDrawer })))
 
 class PanelErrorBoundary extends Component<
   { children: ReactNode; name: string },
@@ -179,14 +180,18 @@ export function AppShell() {
           {/* Main Content Area */}
           <Panel defaultSize={50} minSize={30}>
             <PanelErrorBoundary name="Detail">
-              {renderContent()}
+              <Suspense fallback={<div className="flex h-full items-center justify-center text-text-2 text-sm">Loading...</div>}>
+                {renderContent()}
+              </Suspense>
             </PanelErrorBoundary>
           </Panel>
         </PanelGroup>
       </div>
 
       {/* Remote Connection Drawer */}
-      <RemoteDrawer open={remoteDrawerOpen} onClose={() => setRemoteDrawerOpen(false)} />
+      <Suspense fallback={null}>
+        <RemoteDrawer open={remoteDrawerOpen} onClose={() => setRemoteDrawerOpen(false)} />
+      </Suspense>
     </div>
   )
 }

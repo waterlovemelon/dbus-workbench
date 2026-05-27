@@ -6,9 +6,6 @@ import { registerAllIPCHandlers, cleanupSignalMonitor } from './ipc/index'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const appIconPath = path.join(__dirname, '../assets/icons/png/256x256.png')
 
-// Disable GPU hardware acceleration for better compatibility
-app.disableHardwareAcceleration()
-
 let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
@@ -18,8 +15,8 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 680,
     icon: appIconPath,
-    frame: false, // Frameless window for custom title bar
-    backgroundColor: '#fafafa', // Light background
+    frame: false,
+    backgroundColor: '#fafafa',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -27,11 +24,9 @@ function createWindow() {
     },
   })
 
-  // In development, load from Vite dev server
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadURL('http://localhost:5173')
   } else {
-    // In production, load the built index.html
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
 
@@ -42,7 +37,6 @@ function createWindow() {
 
 // App lifecycle
 app.whenReady().then(() => {
-  // Register IPC handlers
   registerAllIPCHandlers()
 
   createWindow()

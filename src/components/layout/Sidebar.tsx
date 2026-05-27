@@ -74,7 +74,7 @@ export function Sidebar() {
     refetchOnWindowFocus: false,
   })
 
-  // Fetch service info (unique name, pid, process cmd) for all local services in batch
+  // Fetch service info (unique name, pid, process cmd)
   const { data: localSessionServiceInfoMap = {} as Record<string, ServiceInfo>, refetch: refetchLocalSessionServiceInfo } = useQuery({
     queryKey: ['allServiceInfo', 'session'],
     queryFn: () => ipcClient.getAllServiceInfo('session'),

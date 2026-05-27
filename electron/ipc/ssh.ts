@@ -11,26 +11,36 @@ export function getTunnelManager(): TunnelManager {
 }
 
 export function registerSSHHandlers() {
-  // Load saved connections on startup
-  connectionStore.load()
+  // Load saved connections lazily on first access
+  let connectionsLoaded = false
+  function ensureLoaded() {
+    if (!connectionsLoaded) {
+      connectionStore.load()
+      connectionsLoaded = true
+    }
+  }
 
   // List all saved connections
   ipcMain.handle('ssh:listConnections', () => {
+    ensureLoaded()
     return connectionStore.getAll()
   })
 
   // Create a new connection
   ipcMain.handle('ssh:createConnection', (_event, conn: RemoteConnection) => {
+    ensureLoaded()
     return connectionStore.add(conn)
   })
 
   // Update an existing connection
   ipcMain.handle('ssh:updateConnection', (_event, conn: RemoteConnection) => {
+    ensureLoaded()
     return connectionStore.update(conn)
   })
 
   // Delete a connection
   ipcMain.handle('ssh:deleteConnection', (_event, id: string) => {
+    ensureLoaded()
     // Disconnect if connected
     tunnelManager.disconnect(id)
     return connectionStore.remove(id)
@@ -38,6 +48,7 @@ export function registerSSHHandlers() {
 
   // Connect to a remote host
   ipcMain.handle('ssh:connect', async (_event, id: string) => {
+    ensureLoaded()
     const conn = connectionStore.getAll().find((c) => c.id === id)
     if (!conn) {
       return { id, status: 'error', error: '连接配置不存在' }

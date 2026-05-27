@@ -12,7 +12,7 @@ import type { BusType, SignalEvent } from './types'
  * - Track active subscriptions
  */
 export class SignalMonitor extends EventEmitter {
-  private subscriptions: Map<string, { bus: any; rule: string }> = new Map()
+  private subscriptions: Map<string, { bus: any; rule: string; listener: (message: any) => void }> = new Map()
 
   /**
    * Subscribe to a D-Bus signal
@@ -56,7 +56,7 @@ export class SignalMonitor extends EventEmitter {
       await bus.call(method)
 
       // Listen for signals
-      bus.on('message', (message: Message) => {
+      const listener = (message: any) => {
         if (
           message.type === MessageType.SIGNAL &&
           message.path === path &&
@@ -74,10 +74,12 @@ export class SignalMonitor extends EventEmitter {
 
           this.emit('signalReceived', event)
         }
-      })
+      }
+
+      bus.on('message', listener)
 
       // Store subscription
-      this.subscriptions.set(subscriptionKey, { bus, rule })
+      this.subscriptions.set(subscriptionKey, { bus, rule, listener })
 
       return true
     } catch (error: any) {
@@ -126,6 +128,7 @@ export class SignalMonitor extends EventEmitter {
     } catch (error: any) {
       console.error('Failed to unsubscribe from signal:', error)
     } finally {
+      subscription.bus.removeListener('message', subscription.listener)
       subscription.bus.disconnect()
       this.subscriptions.delete(subscriptionKey)
     }
@@ -151,6 +154,7 @@ export class SignalMonitor extends EventEmitter {
 
         promises.push(
           subscription.bus.call(method).finally(() => {
+            subscription.bus.removeListener('message', subscription.listener)
             subscription.bus.disconnect()
             this.subscriptions.delete(key)
           })

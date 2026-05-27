@@ -27,11 +27,11 @@ export class TunnelManager {
     }
 
     const initialState: ConnectionState = { id: config.id, status: 'connecting' }
-    this.connections.set(config.id, { client: new Client(), state: initialState })
+    const client = new Client()
+    this.connections.set(config.id, { client, state: initialState })
     this.emitState(initialState)
 
     return new Promise((resolve) => {
-      const client = new Client()
       let resolved = false
 
       const timeout = setTimeout(() => {

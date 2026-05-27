@@ -22,7 +22,7 @@ export class ServiceExplorer {
       member: 'ListNames',
     }))
 
-    if (namesReply.type !== MessageType.METHOD_RETURN) {
+    if (!namesReply || namesReply.type !== MessageType.METHOD_RETURN) {
       throw new Error('Failed to list services')
     }
 
@@ -41,7 +41,7 @@ export class ServiceExplorer {
         member: 'ListActivatableNames',
       }))
 
-      if (activatableReply.type === MessageType.METHOD_RETURN) {
+      if (activatableReply && activatableReply.type === MessageType.METHOD_RETURN) {
         for (const name of activatableReply.body[0] as string[]) {
           if (!name.startsWith(':')) {
             names.add(name)
